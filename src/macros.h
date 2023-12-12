@@ -1,6 +1,11 @@
-
 // opcodes
 #define OPCODE_SIZE 7;
+#define R_TYPE_OPCODE 0x33
+#define I_TYPE_OPCODE 0x13
+#define S_TYPE_OPCODE 0x23
+#define B_TYPE_OPCODE 0x63
+#define U_TYPE_OPCODE 0x37
+#define J_TYPE_OPCODE 0x6f
 
 // registers
 #define x0 0
