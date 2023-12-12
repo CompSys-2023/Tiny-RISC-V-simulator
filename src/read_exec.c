@@ -96,7 +96,8 @@ int read_exec(struct memory* mem, struct assembly* as, const char* name,
       }
     } else if (sscanf(line, "%x <%s", &addr, symbol) == 2) {
       msg = "Entry";
-      // sscanf included the terminating ">:" in the string, check for it here:
+      // sscanf included the terminating ">:" in the string, check for it
+      // here:
       if (strcmp(symbol, "_start>:") == 0) {
         msg        = "Start";
         start_addr = addr;
