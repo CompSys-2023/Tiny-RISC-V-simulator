@@ -7,6 +7,10 @@
 #define U_TYPE_OPCODE 0x37
 #define J_TYPE_OPCODE 0x6f
 
+// max opcode + 1 since it needs to just range from zero to max opcode so we can
+// index in O(1) time.
+#define OPCODE_FUNCTION_ARRAY_SIZE (J_TYPE_OPCODE + 1)
+
 // registers
 #define x0 0
 #define x1 1

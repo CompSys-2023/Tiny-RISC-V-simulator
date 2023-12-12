@@ -5,6 +5,8 @@
     "stdint.h": "c",
     "stdio.h": "c",
     "stdlib.h": "c",
-    "execute.h": "c"
+    "execute.h": "c",
+    "string.h": "c",
+    "macros.h": "c"
   }
 }

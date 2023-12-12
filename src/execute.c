@@ -1,31 +1,35 @@
 #include "execute.h"
 #include "simulate.h"
 
-void initializeExecuteFunctions(ExecuteFunction* execute_functions) {
-  execute_functions[R_TYPE_OPCODE] = &executeRType;
-  execute_functions[I_TYPE_OPCODE] = &executeIType;
-  execute_functions[S_TYPE_OPCODE] = &executeSType;
-  execute_functions[B_TYPE_OPCODE] = &executeBType;
-  execute_functions[U_TYPE_OPCODE] = &executeUType;
-  execute_functions[J_TYPE_OPCODE] = &executeJType;
+void initialize_execute_functions(execute_function_ptr* functions) {
+  functions[R_TYPE_OPCODE] = &execute_R_type;
+  functions[I_TYPE_OPCODE] = &execute_I_type;
+  functions[S_TYPE_OPCODE] = &execute_S_type;
+  functions[B_TYPE_OPCODE] = &execute_B_type;
+  functions[U_TYPE_OPCODE] = &execute_U_type;
+  functions[J_TYPE_OPCODE] = &execute_J_type;
 }
 
-void executeRType(void* instruction, struct memory* mem) {
-  RTypeInstruction decoded = *(RTypeInstruction*)instruction;
+void execute_R_type(void* instruction, struct memory* mem) {
+  rtype_instruction_t decoded = *(rtype_instruction_t*)instruction;
 }
-void executeIType(void* instruction, struct memory* mem) {
-  ITypeInstruction decoded = *(ITypeInstruction*)instruction;
+
+void execute_I_type(void* instruction, struct memory* mem) {
+  itype_instruction_t decoded = *(itype_instruction_t*)instruction;
 }
-void executeSType(void* instruction, struct memory* mem) {
-  STypeInstruction decoded = *(STypeInstruction*)instruction;
+
+void execute_S_type(void* instruction, struct memory* mem) {
+  stype_instruction_t decoded = *(stype_instruction_t*)instruction;
 }
-void executeBType(void* instruction, struct memory* mem) {
-  BTypeInstruction decoded = *(BTypeInstruction*)instruction;
+
+void execute_B_type(void* instruction, struct memory* mem) {
+  btype_instruction_t decoded = *(btype_instruction_t*)instruction;
 }
-void executeUType(void* instruction, struct memory* mem) {
-  UTypeInstruction decoded = *(UTypeInstruction*)instruction;
+
+void execute_U_type(void* instruction, struct memory* mem) {
+  utype_instruction_t decoded = *(utype_instruction_t*)instruction;
 }
-void executeJType(void* instruction, struct memory* mem) {
-  JTypeInstruction decoded = *(JTypeInstruction*)instruction;
-  
+
+void execute_J_type(void* instruction, struct memory* mem) {
+  jtype_instruction_t decoded = *(jtype_instruction_t*)instruction;
 }
