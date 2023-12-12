@@ -1,9 +1,9 @@
 ---
 # Use spaces (with a width of 4) for indentation
 BasedOnStyle: LLVM
-IndentWidth: 2
+IndentWidth: 4
 UseTab: Never
-TabWidth: 2
+TabWidth: 4
 
 # BraceWrapping: Break before braces on function, namespace and class definitions
 BreakBeforeBraces: Custom
