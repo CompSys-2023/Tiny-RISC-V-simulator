@@ -1,0 +1,10 @@
+# ninja log v5
+15	146	7241976500745778	CMakeFiles/Assignment_0x5.dir/src/helper.c.obj	ea8573d669c5775a
+5	206	7241976501325776	CMakeFiles/Assignment_0x5.dir/src/assembly.c.obj	46b5949af33ed1af
+1	221	7241976501495757	CMakeFiles/Assignment_0x5.dir/src/decode.c.obj	d50843dc72199c87
+10	226	7241976501455776	CMakeFiles/Assignment_0x5.dir/src/main.c.obj	f2627a2978ead5b
+27	227	7241976501515764	CMakeFiles/Assignment_0x5.dir/src/memory.c.obj	a1d4856c3bef573e
+19	256	7241976501835769	CMakeFiles/Assignment_0x5.dir/src/execute.c.obj	8151880fd041d764
+147	318	7241976502485779	CMakeFiles/Assignment_0x5.dir/src/simulate.c.obj	be671730a4426f59
+206	321	7241976502515777	CMakeFiles/Assignment_0x5.dir/src/read_exec.c.obj	8eec70d5564cf37d
+322	555	7241976504825751	Assignment_0x5.exe	72a73ffb4df900a

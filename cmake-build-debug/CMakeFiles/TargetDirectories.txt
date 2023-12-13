@@ -1,0 +1,3 @@
+C:/Users/simon/dev/GitHub/Assignment-0x5/cmake-build-debug/CMakeFiles/Assignment_0x5.dir
+C:/Users/simon/dev/GitHub/Assignment-0x5/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/simon/dev/GitHub/Assignment-0x5/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -10,5 +10,6 @@
     "macros.h": "c",
     "simulate.h": "c",
     "*.inc": "c"
-  }
+  },
+  "discord.enabled": false
 }
