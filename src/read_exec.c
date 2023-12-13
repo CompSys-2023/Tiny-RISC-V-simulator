@@ -110,6 +110,7 @@ int read_exec(struct memory* mem, struct assembly* as, const char* name,
   if (start_addr != -1)
     return start_addr;
   printf("Start symbol not found in file. Terminating");
+  fclose(fp);
 
   exit(-1);
   return 0; // silence warning

@@ -1,12 +1,13 @@
 #include "decode.h"
 
-void initialize_decode_functions(decode_function_ptr* functions) {
-  functions[R_TYPE_OPCODE] = &decode_R_type;
-  functions[I_TYPE_OPCODE] = &decode_I_type;
-  functions[S_TYPE_OPCODE] = &decode_S_type;
-  functions[B_TYPE_OPCODE] = &decode_B_type;
-  functions[U_TYPE_OPCODE] = &decode_U_type;
-  functions[J_TYPE_OPCODE] = &decode_J_type;
+void initialize_decode_functions(decode_fn_ptr* functions) {
+  functions[R_TYPE_OPCODE]     = &decode_R_type;
+  functions[I_TYPE_OPCODE]     = &decode_I_type;
+  functions[S_TYPE_OPCODE]     = &decode_S_type;
+  functions[B_TYPE_OPCODE]     = &decode_B_type;
+  functions[U_TYPE_OPCODE_LUI] = &decode_U_type;
+  functions[U_TYPE_OPCODE_AUI] = &decode_U_type;
+  functions[J_TYPE_OPCODE]     = &decode_J_type;
 }
 
 rtype_instruction_t decode_R_type(uint32_t instruction) {
@@ -19,6 +20,7 @@ rtype_instruction_t decode_R_type(uint32_t instruction) {
   decoded.funct7 = (instruction >> 25) & 0x7f;
   return decoded;
 }
+
 itype_instruction_t decode_I_type(uint32_t instruction) {
   itype_instruction_t decoded;
   decoded.opcode = instruction & 0x7f;
@@ -28,6 +30,7 @@ itype_instruction_t decode_I_type(uint32_t instruction) {
   decoded.imm    = (instruction >> 20) & 0xfff;
   return decoded;
 }
+
 stype_instruction_t decode_S_type(uint32_t instruction) {
   stype_instruction_t decoded;
   decoded.opcode   = instruction & 0x7f;
@@ -38,6 +41,7 @@ stype_instruction_t decode_S_type(uint32_t instruction) {
   decoded.imm_11_5 = (instruction >> 25) & 0x7f;
   return decoded;
 }
+
 btype_instruction_t decode_B_type(uint32_t instruction) {
   btype_instruction_t decoded;
   decoded.opcode   = instruction & 0x7f;
@@ -50,6 +54,7 @@ btype_instruction_t decode_B_type(uint32_t instruction) {
   decoded.imm_12   = (instruction >> 31) & 0x1;
   return decoded;
 }
+
 utype_instruction_t decode_U_type(uint32_t instruction) {
   utype_instruction_t decoded;
   decoded.opcode = instruction & 0x7f;

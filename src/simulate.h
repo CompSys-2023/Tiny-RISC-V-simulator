@@ -20,7 +20,7 @@ typedef struct {
   uint32_t rd : 5;
   uint32_t funct3 : 3;
   uint32_t rs1 : 5;
-  int32_t  imm : 12;
+  uint32_t imm : 12;
 } itype_instruction_t;
 
 typedef struct {
@@ -29,7 +29,7 @@ typedef struct {
   uint32_t funct3 : 3;
   uint32_t rs1 : 5;
   uint32_t rs2 : 5;
-  int32_t  imm_11_5 : 7;
+  uint32_t imm_11_5 : 7;
 } stype_instruction_t;
 
 typedef struct {
