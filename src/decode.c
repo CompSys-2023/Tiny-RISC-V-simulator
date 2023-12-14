@@ -1,15 +1,17 @@
 #include "decode.h"
 
 void initialize_decode_functions(decode_fn_ptr* functions) {
-  functions[R_TYPE_OPCODE]      = &decode_R_type;
-  functions[I_TYPE_OPCODE_JALR] = &decode_I_type;
-  functions[I_TYPE_OPCODE_LOAD] = &decode_I_type;
-  functions[I_TYPE_OPCODE]      = &decode_I_type;
-  functions[S_TYPE_OPCODE]      = &decode_S_type;
-  functions[B_TYPE_OPCODE]      = &decode_B_type;
-  functions[U_TYPE_OPCODE_LUI]  = &decode_U_type;
-  functions[U_TYPE_OPCODE_AUI]  = &decode_U_type;
-  functions[J_TYPE_OPCODE]      = &decode_J_type;
+  functions[R_TYPE_OPCODE]       = &decode_R_type;
+  functions[I_TYPE_OPCODE_ECALL] = &decode_I_type;
+  functions[I_TYPE_OPCODE_ECALL] = &decode_I_type;
+  functions[I_TYPE_OPCODE_JALR]  = &decode_I_type;
+  functions[I_TYPE_OPCODE_LOAD]  = &decode_I_type;
+  functions[I_TYPE_OPCODE]       = &decode_I_type;
+  functions[S_TYPE_OPCODE]       = &decode_S_type;
+  functions[B_TYPE_OPCODE]       = &decode_B_type;
+  functions[U_TYPE_OPCODE_LUI]   = &decode_U_type;
+  functions[U_TYPE_OPCODE_AUI]   = &decode_U_type;
+  functions[J_TYPE_OPCODE]       = &decode_J_type;
 }
 
 rtype_instruction_t* decode_R_type(uint32_t instruction) {

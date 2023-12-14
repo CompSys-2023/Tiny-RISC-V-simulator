@@ -9,7 +9,9 @@
     "string.h": "c",
     "macros.h": "c",
     "simulate.h": "c",
-    "*.inc": "c"
+    "*.inc": "c",
+    "helper.h": "c",
+    "stdbool.h": "c"
   },
   "discord.enabled": false
 }

@@ -3,23 +3,36 @@
 #include "simulate.h"
 
 void initialize_execute_functions(exec_fn_ptr* functions) {
-  functions[R_TYPE_OPCODE]      = &execute_R_type;
-  functions[I_TYPE_OPCODE]      = &execute_I_type;
-  functions[I_TYPE_OPCODE_LOAD] = &execute_I_type;
-  functions[I_TYPE_OPCODE_JALR] = &execute_I_type;
-  functions[S_TYPE_OPCODE]      = &execute_S_type;
-  functions[B_TYPE_OPCODE]      = &execute_B_type;
-  functions[U_TYPE_OPCODE_LUI]  = &execute_U_type;
-  functions[U_TYPE_OPCODE_AUI]  = &execute_U_type;
-  functions[J_TYPE_OPCODE]      = &execute_J_type;
+  functions[R_TYPE_OPCODE]       = &execute_R_type;
+  functions[I_TYPE_OPCODE]       = &execute_I_type;
+  functions[I_TYPE_OPCODE_ECALL] = &execute_I_type;
+  functions[I_TYPE_OPCODE_LOAD]  = &execute_I_type;
+  functions[I_TYPE_OPCODE_JALR]  = &execute_I_type;
+  functions[S_TYPE_OPCODE]       = &execute_S_type;
+  functions[B_TYPE_OPCODE]       = &execute_B_type;
+  functions[U_TYPE_OPCODE_LUI]   = &execute_U_type;
+  functions[U_TYPE_OPCODE_AUI]   = &execute_U_type;
+  functions[J_TYPE_OPCODE]       = &execute_J_type;
+}
+char* memory_rd_str(struct memory* mem, int addr) {
+  char* str = (char*)malloc(1); // Initially allocate memory for one character
+  int   length = 0;
+  int   value;
+
+  while (1) {
+    value       = memory_rd_b(mem, addr + length); // Read a byte from memory
+    str         = (char*)realloc(str, length + 2); // Allocate more memory
+    str[length] = (char)value; // Store the byte in the string
+    length++;
+
+    if (value == '\0') {
+      break; // Break if null character is found
+    }
+  }
+
+  return str;
 }
 
-/**
- * Sign-extends a value that is less than 32 bits to a 32-bit integer.
- * @param value The value to be sign-extended.
- * @param original_bits The original size of the value in bits.
- * @return The sign-extended 32-bit integer.
- */
 int32_t sext(int32_t value, int original_bits) {
   const int shift = 32 - original_bits;
   // Perform the sign extension by left-shifting and then right-shifting.
@@ -34,20 +47,20 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
   uint32_t            rs2     = regs[decoded.rs2];
 
   switch (decoded.funct3) {
-    case ADD_SUB_MUL_FUNCT3:
-      if (decoded.funct7 == ADD_FUNCT7) {
+    case FUNCT3_ADD_SUB_MUL:
+      if (decoded.funct7 == FUNCT7_ADD) {
         regs[decoded.rd] = rs1 + rs2;
-      } else if (decoded.funct7 == SUB_FUNCT7) {
+      } else if (decoded.funct7 == FUNCT7_SUB) {
         regs[decoded.rd] = rs1 - rs2;
-      } else if (decoded.funct7 == MUL_FUNCT7) {
+      } else if (decoded.funct7 == FUNCT7_MUL) {
         regs[decoded.rd] = rs1 * rs2;
       }
       break;
-    case SLL_MULH_FUNCT3:
-      if (decoded.funct7 == SLL_FUNCT7) {
+    case FUNCT3_SLL_MULH:
+      if (decoded.funct7 == FUNCT7_SLL) {
         uint32_t shamt   = rs2 & 0x1f;
         regs[decoded.rd] = rs1 << shamt;
-      } else if (decoded.funct7 == MULH_FUNCT7) {
+      } else if (decoded.funct7 == FUNCT7_MULH) {
         regs[decoded.rd] = ((int32_t)rs1) * ((int32_t)rs2) >> 32;
       }
       break;
@@ -97,7 +110,6 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
 
 void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   printf("Executing I:\n");
-
   itype_instruction_t decoded = *(itype_instruction_t*)instr;
   uint32_t*           regs    = payload->regs;
   uint32_t*           pc      = payload->pc;
@@ -108,7 +120,30 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
     *pc += sext(decoded.imm, 12);
     return;
   }
-  printf("I: Completed\n");
+
+  if (decoded.opcode == I_TYPE_OPCODE_ECALL) { // handle syscall
+    exit(0);
+    switch (regs[REG_A7]) {
+      case 1: // print integer
+        printf("%d", regs[REG_A0]);
+        break;
+      case 4: // print string
+        char* str = memory_rd_str(mem, regs[REG_A0]);
+        if (str != NULL) {
+          printf("%s", str);
+        } else {
+          printf("Error: Invalid memory address\n");
+        }
+        break;
+      case 10: // exit
+        exit(0);
+        break;
+      default:
+        printf("Error: Unknown system call ID %d\n", regs[REG_A7]);
+        break;
+    }
+  }
+
   switch (decoded.opcode) {
     case I_TYPE_OPCODE_LOAD:
       switch (decoded.funct3) {
@@ -184,20 +219,15 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   uint32_t            offset  = (decoded.imm_11_5 << 5) | decoded.imm_4_0;
   uint32_t            address = regs[decoded.rs1] + offset;
 
-  void (*mem_write_ptr)(struct memory*, int, int) = NULL;
+  void (*mem_write_ptr[SW_FUNCT3 + 1])(struct memory*, int, int) = {NULL};
+  mem_write_ptr[SB_FUNCT3]                                       = &memory_wr_b;
+  mem_write_ptr[SH_FUNCT3]                                       = &memory_wr_h;
+  mem_write_ptr[SW_FUNCT3]                                       = &memory_wr_w;
 
-  if (decoded.funct3 == SB_FUNCT3) {
-    mem_write_ptr = &memory_wr_b;
-  } else if (decoded.funct3 == SH_FUNCT3) {
-    mem_write_ptr = &memory_wr_h;
-  } else if (decoded.funct3 == SW_FUNCT3) {
-    mem_write_ptr = &memory_wr_w;
+  if (mem_write_ptr[decoded.funct3] != NULL) {
+    mem_write_ptr[decoded.funct3](mem, address, regs[decoded.rs2]);
   }
 
-  if (mem_write_ptr == NULL)
-    return;
-
-  mem_write_ptr(mem, address, regs[decoded.rs2]);
   printf("S: Completed\n");
 }
 

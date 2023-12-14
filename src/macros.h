@@ -1,113 +1,183 @@
 // opcodes
 #define OPCODE_SIZE 7;
 
-#define R_TYPE_OPCODE 0x33
-
-#define I_TYPE_OPCODE_JALR 0x67
-#define I_TYPE_OPCODE_LOAD 0x03
-#define I_TYPE_OPCODE 0x13
-
-#define S_TYPE_OPCODE 0x23
-#define B_TYPE_OPCODE 0x63
-#define U_TYPE_OPCODE_LUI 0x37
-#define U_TYPE_OPCODE_AUI 0x17
-#define J_TYPE_OPCODE 0x6f
-
-#define something 0x66
-
-// 0110 0110
-
 // max opcode + 1 since it needs to just range from zero to max opcode so we can
 // index in O(1) time.
-#define OPCODE_FUNCTION_ARRAY_SIZE (J_TYPE_OPCODE + 1)
+#define OPCODE_FUNCTION_ARRAY_SIZE (I_TYPE_OPCODE_ECALL + 1)
 
 // registers
 #define NUM_REGISTERS 32
+#define REG_A7 17
+#define REG_A0 10
 
-// R-type
-#define ADD_SUB_MUL_FUNCT3 0x000
-// #define MUL_FUNCT3 0x000
-// #define ADD_FUNCT3 0x000
-#define ADD_FUNCT7 0x0000000
-#define SUB_FUNCT7 0x0100000
-#define MUL_FUNCT7 0x0000001
+// ██████████████████████████████████████████
+// █▄─▄▄▀███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// ██─▄─▄██████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▄▄▀▄▄▀▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+#define R_TYPE_OPCODE 0x33
 
-// #define SLL_FUNCT3 0x001
-// #define MULH_FUNCT3 0x001
-#define SLL_MULH_FUNCT3 0x001
-#define SLL_FUNCT7 0x0000000
-#define MULH_FUNCT7 0x0000001
+// ADD | SUB | MUL
+#define FUNCT3_ADD_SUB_MUL 0x0
+#define FUNCT7_ADD 0x00
+#define FUNCT7_SUB 0x20
+#define FUNCT7_MUL 0x01
 
-// #define SLT_FUNCT3 0x010
-// #define MULHSU_FUNCT3 0x010
-#define SLT_MULHSU_FUNCT3 0x010
-#define SLT_FUNCT7 0x0000000
-#define MULHSU_FUNCT7 0x0000001
+// XOR | DIV
+#define FUNCT3_XOR_DIV 0x4
+#define FUNCT7_XOR 0x00
+#define FUNCT7_DIV 0x01
 
-#define SLTU_FUNCT3 0x011
+// OR | REM
+#define FUNCT3_OR_REM 0x6
+#define FUNCT7_OR 0x00
+#define FUNCT7_REM 0x01
 
-// #define XOR_FUNCT3 0x100
-// #define DIV_FUNCT3 0x100
-#define XOR_DIV_FUNCT3 0x100
-#define XOR_FUNCT7 0x0000000
-#define DIV_FUNCT7 0x0000001
+// AND | REMU
+#define FUNCT3_AND_REMU 0x7
+#define FUNCT7_AND 0x00
+#define FUNCT7_REMU 0x01
 
-// #define SRL_SRA_FUNCT3 0x101
-#define SRL_SRA_DIVU_FUNCT3 0x101
-#define SRL_FUNCT7 0x0000000
-#define SRA_FUNCT7 0x0100000
-#define DIVU_FUNCT7 0x0000001
+// SLL | MULH
+#define FUNCT3_SLL_MULH 0x1
+#define FUNCT7_SLL 0x00
+#define FUNCT7_MULH 0x01
 
-// #define OR_FUNCT3 0x110
-// #define REM_FUNCT3 0x110
-#define OR_REM_FUNCT3 0x110
-#define OR_FUNCT7 0x0000000
-#define REM_FUNCT7 0x0000001
+// SRL | SRA | DIVU
+#define FUNCT3_SRL_SRA_DIVU 0x5
+#define FUNCT7_SRL 0x00
+#define FUNCT7_SRA 0x20
+#define FUNCT7_DIVU 0x01
 
-// #define AND_FUNCT3 0x111
-// #define REMU_FUNCT3 0x111
-#define AND_REMU_FUNCT3 0x111
-#define AND_FUNCT7 0x0000000
-#define REMU_FUNCT 0x0000001
+// SLT | MULSU
+#define FUNCT3_SLT_MULSU 0x2
+#define FUNCT7_SLT 0x00
+#define FUNCT7_MULHSU 0x01
 
-// I-type
-#define JALR_OPCODE I_TYPE_OPCODE_JALR
+// SLTU | MULU
+#define FUNCT3_SLTU_MULU 0x3
+#define FUNCT7_SLTU 0x00
+#define FUNCT7_MULU 0x01
 
-#define ADDI_FUNCT3 0x000
-#define SLTI_FUNCT3 0x010
-#define SLTIU_FUNCT3 0x011
-#define XORI_FUNCT3 0x100
-#define ORI_FUNCT3 0x110
-#define ANDI_FUNCT3 0x111
-#define SLLI_FUNCT3 0x001
+// ████████████████████████████████████████
+// █▄─▄███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// ██─███████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+#define I_TYPE_OPCODE 0x13
 
-#define SRLI_SRAI_FUNCT3 0x101
-#define SRLI_FUNCT7 0x0000000
-#define SRAI_FUNCT7 0x0100000
+// ADDI
+#define FUNCT3_ADDI 0x0
 
-// Load instructions
-#define LB_FUNCT3 0x000
-#define LH_FUNCT3 0x001
-#define LW_FUNCT3 0x010
-#define LBU_FUNCT3 0x100
-#define LHU_FUNCT3 0x101
+// XORI
+#define FUNCT3_XORI 0x4
 
-// S-type
-#define SB_FUNCT3 0x000
-#define SH_FUNCT3 0x001
-#define SW_FUNCT3 0x010
+// ORI
+#define FUNCT3_ORI 0x6
 
-//  B-type
-#define BEQ_FUNCT3 0x000
-#define BNE_FUNCT3 0x001
-#define BLT_FUNCT3 0x100
-#define BGE_FUNCT3 0x101
-#define BLTU_FUNCT3 0x110
-#define BGEU_FUNCT3 0x111
+// ANDI
+#define FUNCT3_ANDI 0x7
 
-// U-type this represents two different opcodes from above
+// SLLI
+#define FUNCT3_SLLI 0x1
+
+// SRLI | SRAI
+#define SRLI_SRAI_FUNCT3 0x5
+#define SRLI_FUNCT7 0x00 // imm[5:11]=0x00
+#define SRAI_FUNCT7 0x20 // imm[5:11]=0x20
+
+// SLTI
+#define FUNCT3_SLTI 0x2
+
+// SLTIU
+#define FUNCT3_SLTIU 0x3
+
+// ████████████████████████████████████████████████████████████████████████
+// █▄─▄███▀▀▀▀▀██▄─▄███─▄▄─██▀▄─██▄─▄▄▀███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// ██─████████████─██▀█─██─██─▀─███─██─██████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▄▄▄▀▀▀▀▀▀▀▀▀▀▄▄▄▄▄▀▄▄▄▄▀▄▄▀▄▄▀▄▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+#define I_TYPE_OPCODE_LOAD 0x3
+
+// LB
+#define FUNCT3_LB 0x0
+
+// LH
+#define FUNCT3_LH 0x1
+
+// LW
+#define FUNCT3_LW 0x2
+
+// LBU
+#define FUNCT3_LBU 0x4
+
+// LHU
+#define FUNCT3_LHU 0x5
+
+// ██████████████████████████████████████████
+// █─▄▄▄▄███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// █▄▄▄▄─██████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▄▄▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+#define S_TYPE_OPCODE 0x23
+
+//  SB
+#define FUNCT3_SB 0x0
+
+// SH
+#define FUNCT3_SH 0x1
+
+// SW
+#define FUNCT3_SW 0x2
+
+// ██████████████████████████████████████████
+// █▄─▄─▀███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// ██─▄─▀██████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▄▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+#define B_TYPE_OPCODE 0x63
+
+// BEQ
+#define FUNCT3_BEQ 0x0
+
+// BNE
+#define FUNCT3_BNE 0x1
+
+// BLT
+#define FUNCT3_BLT 0x4
+
+// BGE
+#define FUNCT3_BGE 0x5
+
+// BLTU
+#define FUNCT3_BLTU 0x6
+
+// BGEU
+#define FUNCT3_BGEU 0x7
+
+// ██████████████████████████████████████████
+// ███▄─▄███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// █─▄█─███████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+#define J_TYPE_OPCODE 0x6f
+
+// JAL
+#define JAL_OPCODE J_TYPE_OPCODE
+
+// JALR (decoding is I-type, but unique opcode)
+#define I_TYPE_OPCODE_JALR 0x67
+
+// ███████████████████████████████████████████
+// █▄─██─▄███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// ██─██─███████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▀▄▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+#define U_TYPE_OPCODE_LUI 0x37
+#define U_TYPE_OPCODE_AUI 0x17
+
+// LUI
 #define LUI_OPCODE U_TYPE_OPCODE_LUI
+
+// AUI
 #define AUIPC_OPCODE U_TYPE_OPCODE_AUI
 
-// J-type
-#define JAL_OPCODE J_TYPE_OPCODE
+// ███████████████████████████████████████████████████████████████████
+// █▄─▄███▀▀▀▀▀████─▄▄▄▄█▄─█─▄█─▄▄▄▄█▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
+// ██─█████████████▄▄▄▄─██▄─▄██▄▄▄▄─████████████─████▄─▄███─▄▄▄██─▄█▀█
+// ▀▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▄▄▀▀▄▄▄▀▀▄▄▄▄▄▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
+// ECALL (decoding I-type but different opcodes, but environment syscall)
+#define I_TYPE_OPCODE_ECALL 0x73
