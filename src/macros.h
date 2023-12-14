@@ -13,6 +13,10 @@
 #define U_TYPE_OPCODE_AUI 0x17
 #define J_TYPE_OPCODE 0x6f
 
+#define something 0x66
+
+// 0110 0110
+
 // max opcode + 1 since it needs to just range from zero to max opcode so we can
 // index in O(1) time.
 #define OPCODE_FUNCTION_ARRAY_SIZE (J_TYPE_OPCODE + 1)
@@ -28,40 +32,40 @@
 #define SUB_FUNCT7 0x0100000
 #define MUL_FUNCT7 0x0000001
 
-//#define SLL_FUNCT3 0x001
-//#define MULH_FUNCT3 0x001
+// #define SLL_FUNCT3 0x001
+// #define MULH_FUNCT3 0x001
 #define SLL_MULH_FUNCT3 0x001
 #define SLL_FUNCT7 0x0000000
 #define MULH_FUNCT7 0x0000001
 
-//#define SLT_FUNCT3 0x010
-//#define MULHSU_FUNCT3 0x010
+// #define SLT_FUNCT3 0x010
+// #define MULHSU_FUNCT3 0x010
 #define SLT_MULHSU_FUNCT3 0x010
 #define SLT_FUNCT7 0x0000000
 #define MULHSU_FUNCT7 0x0000001
 
 #define SLTU_FUNCT3 0x011
 
-//#define XOR_FUNCT3 0x100
-//#define DIV_FUNCT3 0x100
+// #define XOR_FUNCT3 0x100
+// #define DIV_FUNCT3 0x100
 #define XOR_DIV_FUNCT3 0x100
 #define XOR_FUNCT7 0x0000000
 #define DIV_FUNCT7 0x0000001
 
-//#define SRL_SRA_FUNCT3 0x101
+// #define SRL_SRA_FUNCT3 0x101
 #define SRL_SRA_DIVU_FUNCT3 0x101
 #define SRL_FUNCT7 0x0000000
 #define SRA_FUNCT7 0x0100000
 #define DIVU_FUNCT7 0x0000001
 
-//#define OR_FUNCT3 0x110
-//#define REM_FUNCT3 0x110
+// #define OR_FUNCT3 0x110
+// #define REM_FUNCT3 0x110
 #define OR_REM_FUNCT3 0x110
 #define OR_FUNCT7 0x0000000
 #define REM_FUNCT7 0x0000001
 
-//#define AND_FUNCT3 0x111
-//#define REMU_FUNCT3 0x111
+// #define AND_FUNCT3 0x111
+// #define REMU_FUNCT3 0x111
 #define AND_REMU_FUNCT3 0x111
 #define AND_FUNCT7 0x0000000
 #define REMU_FUNCT 0x0000001

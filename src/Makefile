@@ -8,6 +8,16 @@ rebuild: clean all
 sim: *.c 
 	$(GCC) *.c -o sim 
 
+%.riscv: testing_files/%.c testing_files/lib.c Makefile
+	/opt/riscv-32v/bin/riscv32-unknown-elf-gcc -march=rv32im -mabi=ilp32 -fno-tree-loop-distribute-patterns -mno-relax -O0 $< testing_files/lib.c -static -nostartfiles -nostdlib -o $@
+
+%.riscv: testing_files/%.s Makefile
+	/opt/riscv-32v/bin/riscv32-unknown-elf-gcc -march=rv32im -mabi=ilp32 -fno-tree-loop-distribute-patterns -mno-relax -O0 $< -static -nostartfiles -nostdlib -o $@
+
+%.dis: %.riscv Makefile
+	/opt/riscv-32v/bin/riscv32-unknown-elf-objdump -s -w $< > $@
+	/opt/riscv-32v/bin/riscv32-unknown-elf-objdump -S $< >> $@
+
 zip: ../src.zip
 
 ../src.zip: clean

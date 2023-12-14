@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+const long int max_instructions = 50000;
+
 uint32_t      registers[NUM_REGISTERS]                      = {0};
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
@@ -25,15 +27,16 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 
   printf("Starting simulation at address %08x\n", start_addr);
 
-  while (running) {
-
-    uint32_t instruction = fetch_instruction(mem, pc);
-    uint32_t opcode      = instruction & 0x7f;
-    if (opcode == 0x0) {
-      printf("Opcode is 0, exiting..\n");
+  while (running && instruction_count < max_instructions) {
+    uint32_t instruction = memory_rd_w(mem, pc);
+    if (instruction == NULL) {
+      printf("NULL instruction\n");
       running = false;
       break;
     }
+
+    uint32_t opcode = instruction & 0x7f;
+
     printf("Opcode: %08x\n", opcode);
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
@@ -50,14 +53,4 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
   }
   return instruction_count;
   printf("DONE SIMULATE\n");
-}
-
-// Function to fetch an instruction from memory
-uint32_t fetch_instruction(struct memory* mem, int address) {
-  uint32_t instruction = 0;
-  instruction |= memory_rd_b(mem, address + 0) << 0;
-  instruction |= memory_rd_b(mem, address + 1) << 8;
-  instruction |= memory_rd_b(mem, address + 2) << 16;
-  instruction |= memory_rd_b(mem, address + 3) << 24;
-  return instruction;
 }
