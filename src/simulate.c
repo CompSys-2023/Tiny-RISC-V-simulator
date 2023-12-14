@@ -12,9 +12,9 @@
 
 const long int max_instructions = 50000;
 
-uint32_t      registers[NUM_REGISTERS]                      = {0};
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
+int32_t       registers[NUM_REGISTERS]                      = {0};
 
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,
                   FILE* log_file) {
@@ -29,15 +29,13 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 
   while (running && instruction_count < max_instructions) {
     uint32_t instruction = memory_rd_w(mem, pc);
-    if (instruction == NULL) {
+    if (instruction == 0x0) {
       printf("NULL instruction\n");
       running = false;
-      break;
+      return instruction_count;
     }
-
-    uint32_t opcode = instruction & 0x7f;
-
-    printf("Opcode: %08x\n", opcode);
+    int32_t opcode = instruction & 0x7f;
+    printf("Opcode: %x\n", opcode);
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
     execute_functions[opcode](decoded_instruction, mem, &payload);
@@ -46,7 +44,7 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
       fprintf(log_file, "PC: %08x, Instruction: %08x\n", pc, instruction);
     }
 
-    printf("Instruction count: %ld\n", instruction_count);
+    printf("Count: %ld\n", instruction_count);
     printf("PC: %08x, Instruction: %08x\n", pc, instruction);
     pc += 4;
     instruction_count++;

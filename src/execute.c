@@ -28,10 +28,6 @@ int32_t sext(int32_t value, int original_bits) {
 
 void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
   printf("Executing R:\n");
-  if (instr == NULL) {
-    printf("Null instruction pointer.\n");
-    return;
-  }
   rtype_instruction_t decoded = *(rtype_instruction_t*)instr;
   uint32_t*           regs    = payload->regs;
   uint32_t            rs1     = regs[decoded.rs1];
@@ -101,10 +97,6 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
 
 void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   printf("Executing I:\n");
-  if (instr == NULL) {
-    printf("Null instruction pointer.\n");
-    return;
-  }
 
   itype_instruction_t decoded = *(itype_instruction_t*)instr;
   uint32_t*           regs    = payload->regs;
@@ -187,10 +179,6 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
 
 void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   printf("Executing S:\n");
-  if (instr == NULL) {
-    printf("Null instruction pointer.\n");
-    return;
-  }
   stype_instruction_t decoded = *(stype_instruction_t*)instr;
   uint32_t*           regs    = payload->regs;
   uint32_t            offset  = (decoded.imm_11_5 << 5) | decoded.imm_4_0;
@@ -215,10 +203,6 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
 
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
   printf("Executing B:\n");
-  if (instr == NULL) {
-    printf("Null instruction pointer.\n");
-    return;
-  }
   btype_instruction_t decoded = *(btype_instruction_t*)instr;
   uint32_t*           regs    = payload->regs;
   uint32_t*           pc      = payload->pc;
@@ -267,10 +251,6 @@ void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
 
 void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
   printf("Executing U:\n");
-  if (instr == NULL) {
-    printf("Null instruction pointer.\n");
-    return;
-  }
   utype_instruction_t decoded = *(utype_instruction_t*)instr;
   uint32_t*           regs    = payload->regs;
   uint32_t*           pc      = payload->pc;
@@ -292,10 +272,6 @@ void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
 
 void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
   printf("Executing J:\n");
-  if (instr == NULL) {
-    printf("Null instruction pointer.\n");
-    return;
-  }
   jtype_instruction_t decoded = *(jtype_instruction_t*)instr;
   uint32_t*           regs    = payload->regs;
   uint32_t*           pc      = payload->pc;

@@ -58,8 +58,6 @@ typedef struct {
   uint32_t imm_20 : 1;
 } jtype_instruction_t;
 
-uint32_t fetch_instruction(struct memory* mem, int address);
-
 // Simuler RISC-V program i givet lager og fra given start adresse
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,
                   FILE* log_file);
