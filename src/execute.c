@@ -164,6 +164,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   }
 
   if (decoded.opcode == I_TYPE_OPCODE_ECALL) {
+    printf("=============== ECALL ===============\n");
     switch (regs[REG_A7]) {
       case 1: // print integer
         printf("%d", regs[REG_A0]);
@@ -187,6 +188,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         printf("Error: Unknown system call ID %d\n", regs[REG_A7]);
         break;
     }
+    printf("=====================================\n");
     return;
   }
 
@@ -204,14 +206,14 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
       regs[rd] = rs1 & imm;
       break;
     case FUNCT3_SLLI:
-      regs[rd] = rs1 << (imm & BIT_MASK_5);
+      regs[rd] = rs1 << (imm & 0x1F);
       break;
     case FUNCT3_SRLI_SRAI:
       if (imm >> 10 == FUNCT7_SRLI) {
-        regs[rd] = rs1 >> (imm & BIT_MASK_5);
+        regs[rd] = rs1 >> (imm & 0x1F);
       } else if (imm >> 10 == FUNCT7_SRAI) {
         // TODO: MSB EXTEND
-        regs[rd] = rs1 >> (imm & BIT_MASK_5);
+        regs[rd] = rs1 >> (imm & 0x1F);
       }
       break;
     case FUNCT3_SLTI:
