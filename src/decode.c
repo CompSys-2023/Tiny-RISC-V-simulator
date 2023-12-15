@@ -30,31 +30,36 @@ itype_instruction_t* decode_I_type(uint32_t instruction) {
   decoded->rd                  = (instruction >> 7) & 0x1f;
   decoded->funct3              = (instruction >> 12) & 0x7;
   decoded->rs1                 = (instruction >> 15) & 0x1f;
-  decoded->imm                 = (int32_t)instruction >> 20;
+  decoded->imm                 = (instruction >> 20) & 0xfff;
   return decoded;
 }
 
 stype_instruction_t* decode_S_type(uint32_t instruction) {
   stype_instruction_t* decoded = malloc(sizeof(stype_instruction_t));
-  decoded->opcode              = instruction & 0x7f;
-  decoded->imm_4_0             = (instruction >> 7) & 0x1f;
-  decoded->funct3              = (instruction >> 12) & 0x7;
-  decoded->rs1                 = (instruction >> 15) & 0x1f;
-  decoded->rs2                 = (instruction >> 20) & 0x1f;
-  decoded->imm_11_5            = (instruction >> 25) & 0x7f;
+
+  decoded->opcode  = instruction & 0x7f;
+  int32_t imm_4_0  = (instruction >> 7) & 0x1f;
+  decoded->funct3  = (instruction >> 12) & 0x7;
+  decoded->rs1     = (instruction >> 15) & 0x1f;
+  decoded->rs2     = (instruction >> 20) & 0x1f;
+  int32_t imm_11_5 = (instruction >> 25) & 0x7f;
+  decoded->imm     = (imm_11_5 << 5) | imm_4_0;
   return decoded;
 }
 
 btype_instruction_t* decode_B_type(uint32_t instruction) {
   btype_instruction_t* decoded = malloc(sizeof(btype_instruction_t));
   decoded->opcode              = instruction & 0x7f;
-  decoded->imm_11              = (instruction >> 7) & 0x1;
-  decoded->imm_4_1             = (instruction >> 8) & 0xf;
+  int32_t imm_11               = (instruction >> 7) & 0x1;
+  int32_t imm_4_1              = (instruction >> 8) & 0xf;
   decoded->funct3              = (instruction >> 12) & 0x7;
   decoded->rs1                 = (instruction >> 15) & 0x1f;
   decoded->rs2                 = (instruction >> 20) & 0x1f;
-  decoded->imm_10_5            = (instruction >> 25) & 0x3f;
-  decoded->imm_12              = (instruction >> 31) & 0x1;
+  int32_t imm_10_5             = (instruction >> 25) & 0x3f;
+  int32_t imm_12               = (instruction >> 31) & 0x1;
+  decoded->imm                 = (imm_11 << 11) | ((imm_10_5 & 0x3F) << 5) |
+                 ((imm_4_1 & 0xF) << 1) | (imm_12 << 12);
+
   return decoded;
 }
 
@@ -62,10 +67,12 @@ jtype_instruction_t* decode_J_type(uint32_t instruction) {
   jtype_instruction_t* decoded = malloc(sizeof(jtype_instruction_t));
   decoded->opcode              = instruction & 0x7f;
   decoded->rd                  = (instruction >> 7) & 0x1f;
-  decoded->imm_19_12           = (instruction >> 12) & 0xff;
-  decoded->imm_11              = (instruction >> 20) & 0x1;
-  decoded->imm_10_1            = (instruction >> 21) & 0x3ff;
-  decoded->imm_20              = (instruction >> 31) & 0x1;
+  int32_t imm_19_12            = (instruction >> 12) & 0xff;
+  int32_t imm_11               = (instruction >> 20) & 0x1;
+  int32_t imm_10_1             = (instruction >> 21) & 0x3ff;
+  int32_t imm_20               = (instruction >> 31) & 0x1;
+  decoded->imm =
+      ((imm_20 << 20) | (imm_19_12 << 12) | (imm_11 << 11) | (imm_10_1 << 1));
   return decoded;
 }
 

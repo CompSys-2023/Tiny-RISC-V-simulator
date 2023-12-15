@@ -25,22 +25,18 @@ typedef struct {
 
 typedef struct {
   uint32_t opcode : 7;
-  int32_t  imm_4_0 : 5;
   uint32_t funct3 : 3;
   uint32_t rs1 : 5;
   uint32_t rs2 : 5;
-  int32_t  imm_11_5 : 7;
+  int32_t  imm : 12; // Combines imm_4_0 and imm_11_5
 } stype_instruction_t;
 
 typedef struct {
   uint32_t opcode : 7;
-  int32_t  imm_11 : 1;
-  int32_t  imm_4_1 : 4;
   uint32_t funct3 : 3;
   uint32_t rs1 : 5;
   uint32_t rs2 : 5;
-  int32_t  imm_10_5 : 6;
-  int32_t  imm_12 : 1;
+  int32_t  imm : 12;
 } btype_instruction_t;
 
 typedef struct {
@@ -52,10 +48,7 @@ typedef struct {
 typedef struct {
   uint32_t opcode : 7;
   uint32_t rd : 5;
-  int32_t  imm_19_12 : 8;
-  int32_t  imm_11 : 1;
-  int32_t  imm_10_1 : 10;
-  int32_t  imm_20 : 1;
+  int32_t  imm : 20;
 } jtype_instruction_t;
 
 // Simuler RISC-V program i givet lager og fra given start adresse

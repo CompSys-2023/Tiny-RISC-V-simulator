@@ -124,7 +124,6 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t             rs1     = regs[decoded.rs1];
   uint32_t            rd      = decoded.rd;
   int32_t             imm     = decoded.imm;
-  // imm                         = (imm << 20) >> 20;
 
   printf("Executing I:\n");
 
@@ -165,11 +164,14 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   }
 
   if (decoded.opcode == I_TYPE_OPCODE_ECALL) {
-    exit(0); // husk at den exitter
     switch (regs[REG_A7]) {
       case 1: // print integer
         printf("%d", regs[REG_A0]);
         break;
+      case 2: // print float
+        printf("%f", regs[REG_A0]);
+        break;
+
       case 4: // print string
         char* str = memory_rd_str(mem, regs[REG_A0]);
         if (str != NULL) {
@@ -234,8 +236,8 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t*            regs    = payload->regs;
   int32_t             rs1     = regs[decoded.rs1];
   int32_t             rs2     = regs[decoded.rs2];
-  int32_t             imm     = (decoded.imm_11_5 << 5) | decoded.imm_4_0;
-  int32_t             address = rs1 + (imm << 20 >> 20);
+  int32_t             imm     = decoded.imm;
+  int32_t             address = rs1 + imm;
 
   switch (decoded.funct3) {
     case FUNCT3_SB:
@@ -261,9 +263,7 @@ void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t*            regs    = payload->regs;
   int32_t             rs1     = regs[decoded.rs1];
   int32_t             rs2     = regs[decoded.rs2];
-  int32_t             imm = (decoded.imm_11 << 11) | (decoded.imm_10_5 << 5) |
-                (decoded.imm_4_1 << 1) | (decoded.imm_12 << 12);
-  imm = (imm << 20) >> 20;
+  int32_t             imm     = decoded.imm;
 
   switch (decoded.funct3) {
     case FUNCT3_BEQ:
@@ -272,9 +272,15 @@ void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
       }
       break;
     case FUNCT3_BNE:
+      printf("=============\n");
+      printf("PC: %05x\n", *pc);
       if (rs1 != rs2) {
         *pc += imm;
+        printf("imm: %d\n", imm);
+        printf("PC: %05x\n", *pc);
       }
+      printf("PC: %05x\n", *pc);
+      printf("=============\n");
       break;
     case FUNCT3_BLT:
       if (rs1 < rs2) {
@@ -308,11 +314,7 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
   uint32_t*           pc      = payload->pc;
   int32_t*            regs    = payload->regs;
   uint32_t            rd      = decoded.rd;
-
-  // Combine and sign-extend the immediate value
-  int32_t imm = ((decoded.imm_20 << 20) | (decoded.imm_19_12 << 12) |
-                 (decoded.imm_11 << 11) | (decoded.imm_10_1 << 1));
-  imm         = (imm << 12) >> 12; // Sign-extend from 20 bits to 32 bits
+  uint32_t            imm     = decoded.imm;
 
   switch (decoded.opcode) {
     case JAL_OPCODE:
