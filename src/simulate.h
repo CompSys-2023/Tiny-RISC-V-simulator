@@ -46,7 +46,7 @@ typedef struct {
 typedef struct {
   uint32_t opcode : 7;
   uint32_t rd : 5;
-  int32_t  imm : 20;
+  uint32_t  imm : 20;
 } utype_instruction_t;
 
 typedef struct {

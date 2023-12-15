@@ -1,14 +1,17 @@
 // opcodes
-#define OPCODE_SIZE 7;
-
 // max opcode + 1 since it needs to just range from zero to max opcode so we can
 // index in O(1) time.
-#define OPCODE_FUNCTION_ARRAY_SIZE (I_TYPE_OPCODE_ECALL + 1)
 
 // registers
 #define NUM_REGISTERS 32
 #define REG_A7 17
 #define REG_A0 10
+
+// ███████████████████████████████████████████████████
+// █▄─▄─▀█▄─▄█─▄─▄─███▄─▀█▀─▄██▀▄─██─▄▄▄▄█▄─█─▄█─▄▄▄▄█
+// ██─▄─▀██─████─██████─█▄█─███─▀─██▄▄▄▄─██─▄▀██▄▄▄▄─█
+// ▀▄▄▄▄▀▀▄▄▄▀▀▄▄▄▀▀▀▀▄▄▄▀▄▄▄▀▄▄▀▄▄▀▄▄▄▄▄▀▄▄▀▄▄▀▄▄▄▄▄▀
+#define BIT_MASK_5 0x1F
 
 // ██████████████████████████████████████████
 // █▄─▄▄▀███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
@@ -51,7 +54,7 @@
 // SLT | MULSU
 #define FUNCT3_SLT_MULSU 0x2
 #define FUNCT7_SLT 0x00
-#define FUNCT7_MULHSU 0x01
+#define FUNCT7_MULSU 0x01
 
 // SLTU | MULU
 #define FUNCT3_SLTU_MULU 0x3
@@ -80,9 +83,9 @@
 #define FUNCT3_SLLI 0x1
 
 // SRLI | SRAI
-#define SRLI_SRAI_FUNCT3 0x5
-#define SRLI_FUNCT7 0x00 // imm[5:11]=0x00
-#define SRAI_FUNCT7 0x20 // imm[5:11]=0x20
+#define FUNCT3_SRLI_SRAI 0x5
+#define FUNCT7_SRLI 0x00 // imm[5:11]=0x00
+#define FUNCT7_SRAI 0x20 // imm[5:11]=0x20
 
 // SLTI
 #define FUNCT3_SLTI 0x2
@@ -181,3 +184,4 @@
 // ▀▄▄▄▀▀▀▀▀▀▀▀▀▀▀▀▄▄▄▄▄▀▀▄▄▄▀▀▄▄▄▄▄▀▀▀▀▀▀▀▀▀▀▀▄▄▄▀▀▀▄▄▄▀▀▄▄▄▀▀▀▄▄▄▄▄▀
 // ECALL (decoding I-type but different opcodes, but environment syscall)
 #define I_TYPE_OPCODE_ECALL 0x73
+#define OPCODE_FUNCTION_ARRAY_SIZE (I_TYPE_OPCODE_ECALL + 1)

@@ -9,9 +9,9 @@ void initialize_decode_functions(decode_fn_ptr* functions) {
   functions[I_TYPE_OPCODE]       = &decode_I_type;
   functions[S_TYPE_OPCODE]       = &decode_S_type;
   functions[B_TYPE_OPCODE]       = &decode_B_type;
+  functions[J_TYPE_OPCODE]       = &decode_J_type;
   functions[U_TYPE_OPCODE_LUI]   = &decode_U_type;
   functions[U_TYPE_OPCODE_AUI]   = &decode_U_type;
-  functions[J_TYPE_OPCODE]       = &decode_J_type;
 }
 
 rtype_instruction_t* decode_R_type(uint32_t instruction) {
@@ -59,14 +59,6 @@ btype_instruction_t* decode_B_type(uint32_t instruction) {
   return decoded;
 }
 
-utype_instruction_t* decode_U_type(uint32_t instruction) {
-  utype_instruction_t* decoded = malloc(sizeof(utype_instruction_t));
-  decoded->opcode              = instruction & 0x7f;
-  decoded->rd                  = (instruction >> 7) & 0x1f;
-  decoded->imm                 = (instruction >> 12) & 0xfffff;
-  return decoded;
-}
-
 jtype_instruction_t* decode_J_type(uint32_t instruction) {
   jtype_instruction_t* decoded = malloc(sizeof(jtype_instruction_t));
   decoded->opcode              = instruction & 0x7f;
@@ -75,5 +67,13 @@ jtype_instruction_t* decode_J_type(uint32_t instruction) {
   decoded->imm_11              = (instruction >> 20) & 0x1;
   decoded->imm_10_1            = (instruction >> 21) & 0x3ff;
   decoded->imm_20              = (instruction >> 31) & 0x1;
+  return decoded;
+}
+
+utype_instruction_t* decode_U_type(uint32_t instruction) {
+  utype_instruction_t* decoded = malloc(sizeof(utype_instruction_t));
+  decoded->opcode              = instruction & 0x7f;
+  decoded->rd                  = (instruction >> 7) & 0x1f;
+  decoded->imm                 = (instruction >> 12) & 0xfffff;
   return decoded;
 }

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 const long int max_instructions = 100000;
 
@@ -27,22 +28,44 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
   printf("Starting simulation at address %08x\n", start_addr);
 
   while (1 && instruction_count < max_instructions) {
-    uint32_t  instruction         = memory_rd_w(mem, pc);
-    int32_t   opcode              = instruction & 0x7f;
+    uint32_t instruction = memory_rd_w(mem, pc);
+    int32_t  opcode      = instruction & 0x7f;
+    printf("PC: %05x, Instruction: %08x\n", pc, instruction);
+    print_registers(registers, NUM_REGISTERS);
+
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
+    sleep(10);
     execute_functions[opcode](decoded_instruction, mem, &payload);
 
     if (log_file != NULL) {
-      fprintf(log_file, "PC: %08x, Instruction: %08x\n", pc, instruction);
+      fprintf(log_file, "PC: %05x, Instruction: %08x\n", pc, instruction);
     }
 
-    printf("Opcode: %x\n", opcode);
-    printf("Count: %ld\n", instruction_count);
-    printf("PC: %08x, Instruction: %08x\n", pc, instruction);
     pc += 4;
     instruction_count++;
   }
   return instruction_count;
   printf("DONE SIMULATE\n");
+}
+
+void print_registers(int32_t regs[], int num_regs) {
+  // Printing the first row (register names)
+  for (int i = 0; i < num_regs; ++i) {
+    printf("| x%d ", i);
+  }
+  printf("|\n");
+
+  // Printing the horizontal separator
+  for (int i = 0; i < num_regs; ++i) {
+    printf("------");
+  }
+  printf("\n");
+
+  // Printing the second row (register values)
+  for (int i = 0; i < num_regs; ++i) {
+    printf("| %d ",
+           regs[i]); // Adjust the spacing depending on expected value range
+  }
+  printf("|\n");
 }

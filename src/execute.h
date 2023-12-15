@@ -1,12 +1,12 @@
 #ifndef EXECUTE_H
 #define EXECUTE_H
 
-#include "memory.h"
 #include "macros.h"
+#include "memory.h"
 #include <stdint.h>
 
 typedef struct {
-  uint32_t* regs;
+  int32_t*  regs;
   uint32_t* pc;
 } payload_t;
 
@@ -16,6 +16,6 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload);
 void execute_I_type(void* instr, struct memory* mem, payload_t* payload);
 void execute_S_type(void* instr, struct memory* mem, payload_t* payload);
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload);
-void execute_U_type(void* instr, struct memory* mem, payload_t* payload);
 void execute_J_type(void* instr, struct memory* mem, payload_t* payload);
+void execute_U_type(void* instr, struct memory* mem, payload_t* payload);
 #endif
