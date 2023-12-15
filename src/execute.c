@@ -135,19 +135,19 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         regs[rd]      = ((int32_t)(value0 << 24)) >> 24;
         break;
       case FUNCT3_LH:
-        int16_t value1 = memory_rd_h(mem, rs1 + offset);
+        int16_t value1 = memory_rd_h(mem, rs1 + imm);
         regs[rd]       = ((int32_t)(value1 << 16)) >> 16;
         break;
       case FUNCT3_LW:
-        int32_t value2 = memory_rd_w(mem, rs1 + offset);
+        int32_t value2 = memory_rd_w(mem, rs1 + imm);
         regs[rd]       = value2;
         break;
       case FUNCT3_LBU:
-        uint8_t value3 = memory_rd_b(mem, rs1 + offset);
+        uint8_t value3 = memory_rd_b(mem, rs1 + imm);
         regs[rd]       = (int32_t)value3;
         break;
       case FUNCT3_LHU:
-        uint16_t value4 = memory_rd_h(mem, rs1 + offset);
+        uint16_t value4 = memory_rd_h(mem, rs1 + imm);
         regs[rd]        = (int32_t)value4;
         break;
     }
