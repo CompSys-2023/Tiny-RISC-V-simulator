@@ -2,11 +2,10 @@
 
 void initialize_decode_functions(decode_fn_ptr* functions) {
   functions[R_TYPE_OPCODE]       = &decode_R_type;
-  functions[I_TYPE_OPCODE_ECALL] = &decode_I_type;
+  functions[I_TYPE_OPCODE]       = &decode_I_type;
   functions[I_TYPE_OPCODE_ECALL] = &decode_I_type;
   functions[I_TYPE_OPCODE_JALR]  = &decode_I_type;
   functions[I_TYPE_OPCODE_LOAD]  = &decode_I_type;
-  functions[I_TYPE_OPCODE]       = &decode_I_type;
   functions[S_TYPE_OPCODE]       = &decode_S_type;
   functions[B_TYPE_OPCODE]       = &decode_B_type;
   functions[J_TYPE_OPCODE]       = &decode_J_type;

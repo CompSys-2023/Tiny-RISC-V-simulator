@@ -31,11 +31,10 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
     uint32_t instruction = memory_rd_w(mem, pc);
     int32_t  opcode      = instruction & 0x7f;
     printf("PC: %05x, Instruction: %08x\n", pc, instruction);
-    print_registers(registers, NUM_REGISTERS);
+    // print_registers(registers, NUM_REGISTERS);
 
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
-    sleep(10);
     execute_functions[opcode](decoded_instruction, mem, &payload);
 
     if (log_file != NULL) {

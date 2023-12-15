@@ -39,68 +39,74 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t*            regs    = payload->regs;
   int32_t             rs1     = regs[decoded.rs1];
   int32_t             rs2     = regs[decoded.rs2];
-
+  int32_t             rd      = decoded.rd;
   switch (decoded.funct3) {
     case FUNCT3_ADD_SUB_MUL:
       if (decoded.funct7 == FUNCT7_ADD) {
-        regs[decoded.rd] = rs1 + rs2;
+        regs[rd] = rs1 + rs2;
       } else if (decoded.funct7 == FUNCT7_SUB) {
-        regs[decoded.rd] = rs1 - rs2;
+        regs[rd] = rs1 - rs2;
       } else if (decoded.funct7 == FUNCT7_MUL) {
-        int64_t result   = (int64_t)rs1 * (int64_t)rs2;
-        regs[decoded.rd] = (int32_t)(result);
+        int64_t result = (int64_t)rs1 * (int64_t)rs2;
+        regs[rd]       = (int32_t)(result);
       }
       break;
     case FUNCT3_XOR_DIV:
       if (decoded.funct7 == FUNCT7_XOR) {
-        regs[decoded.rd] = rs1 ^ rs2;
+        regs[rd] = rs1 ^ rs2;
       } else if (decoded.funct7 == FUNCT7_DIV) {
-        regs[decoded.rd] = rs1 / rs2;
+        regs[rd] = rs1 / rs2;
       }
       break;
     case FUNCT3_OR_REM:
       if (decoded.funct7 == FUNCT7_OR) {
-        regs[decoded.rd] = rs1 | rs2;
+        regs[rd] = rs1 | rs2;
       } else if (decoded.funct7 == FUNCT7_REM) {
-        regs[decoded.rd] = rs1 % rs2;
+        regs[rd] = rs1 % rs2;
       }
       break;
     case FUNCT3_AND_REMU:
       if (decoded.funct7 == FUNCT7_AND) {
-        regs[decoded.rd] = rs1 & rs2;
+        regs[rd] = rs1 & rs2;
       } else if (decoded.funct7 == FUNCT7_REMU) {
-        regs[decoded.rd] = (uint32_t)rs1 % (uint32_t)rs2;
+        regs[rd] = (uint32_t)rs1 % (uint32_t)rs2;
       }
       break;
     case FUNCT3_SLL_MULH:
       if (decoded.funct7 == FUNCT7_SLL) {
-        regs[decoded.rd] = rs1 << rs2;
+        regs[rd] = rs1 << rs2;
       } else if (decoded.funct7 == FUNCT7_MULH) {
-        int64_t result   = (int64_t)rs1 * (int64_t)rs2;
-        regs[decoded.rd] = (int32_t)(result >> 32);
+        int64_t result = (int64_t)rs1 * (int64_t)rs2;
+        regs[rd]       = (int32_t)(result >> 32);
       }
       break;
     case FUNCT3_SRL_SRA_DIVU:
-      // SKAL IMPLEMENTERES DEN VAR DUM
+      if (decoded.funct7 == FUNCT7_SRL) {
+        regs[rd] = (uint32_t)rs1 >> rs2;
+      } else if (decoded.funct7 == FUNCT7_SRA) {
+        regs[rd] = rs1 >> rs2;
+      } else if (decoded.funct7 == FUNCT7_DIVU) {
+        regs[rd] = (uint32_t)rs1 / (uint32_t)rs2;
+      }
       break;
     case FUNCT3_SLT_MULSU:
       if (decoded.funct7 == FUNCT7_SLT) {
-        regs[decoded.rd] = rs1 < rs2 ? 1 : 0;
+        regs[rd] = rs1 < rs2 ? 1 : 0;
       } else if (decoded.funct7 == FUNCT7_MULSU) {
         int64_t  signed_rs1   = (int32_t)rs1;
         uint64_t unsigned_rs2 = (uint32_t)rs2;
         uint64_t result       = signed_rs1 * unsigned_rs2;
-        regs[decoded.rd]      = (int32_t)(result >> 32);
+        regs[rd]              = (int32_t)(result >> 32);
       }
       break;
     case FUNCT3_SLTU_MULU:
       if (decoded.funct7 == FUNCT7_SLTU) {
-        regs[decoded.rd] = (uint32_t)rs1 < (uint32_t)rs2 ? 1 : 0;
+        regs[rd] = (uint32_t)rs1 < (uint32_t)rs2 ? 1 : 0;
       } else if (decoded.funct7 == FUNCT7_MULU) {
         uint64_t unsigned_rs1 = (uint32_t)rs1;
         uint64_t unsigned_rs2 = (uint32_t)rs2;
         uint64_t result       = unsigned_rs1 * unsigned_rs2;
-        regs[decoded.rd]      = (int32_t)(result >> 32);
+        regs[rd]              = (int32_t)(result >> 32);
       }
       break;
   }
@@ -114,13 +120,18 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t*            regs    = payload->regs;
   int32_t             rs1     = regs[decoded.rs1];
   uint32_t            rd      = decoded.rd;
-  uint32_t            imm     = decoded.imm;
-  int32_t             offset  = ((int32_t)(imm << 20)) >> 20;
+  int32_t             imm     = decoded.imm;
+
+  if (decoded.opcode == I_TYPE_OPCODE_JALR) {
+    regs[rd] = *pc + 4;
+    *pc      = rs1 + imm;
+    return;
+  }
 
   if (decoded.opcode = I_TYPE_OPCODE_LOAD) {
     switch (decoded.funct3) {
       case FUNCT3_LB:
-        int8_t value0 = memory_rd_b(mem, rs1 + offset);
+        int8_t value0 = memory_rd_b(mem, rs1 + imm);
         regs[rd]      = ((int32_t)(value0 << 24)) >> 24;
         break;
       case FUNCT3_LH:
@@ -209,9 +220,8 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t*            regs    = payload->regs;
   int32_t             rs1     = regs[decoded.rs1];
   int32_t             rs2     = regs[decoded.rs2];
-  uint32_t            imm     = (decoded.imm_11_5 << 5) | decoded.imm_4_0;
-  int32_t             offset  = ((int32_t)(imm << 20)) >> 20;
-  int32_t             address = rs1 + offset;
+  int32_t             imm     = (decoded.imm_11_5 << 5) | decoded.imm_4_0;
+  int32_t             address = rs1 + imm;
 
   switch (decoded.funct3) {
     case FUNCT3_SB:
@@ -244,35 +254,32 @@ void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
   switch (decoded.funct3) {
     case FUNCT3_BEQ:
       if (rs1 == rs2) {
-        *pc += imm_ext;
+        *pc += imm_ext - 4;
       }
       break;
     case FUNCT3_BNE:
       if (rs1 != rs2) {
-        printf("PC before: %08x\n", *pc);
-        *pc += imm_ext;
-        printf("BNE: %d != %d\n", rs1, rs2);
-        printf("PC after: %08x\n", *pc);
+        *pc += imm_ext - 4;
       }
       break;
     case FUNCT3_BLT:
       if (rs1 < rs2) {
-        *pc += imm_ext;
+        *pc += imm_ext - 4;
       }
       break;
     case FUNCT3_BGE:
       if (rs1 >= rs2) {
-        *pc += imm_ext;
+        *pc += imm_ext - 4;
       }
       break;
     case FUNCT3_BLTU:
       if (rs1 < (uint32_t)rs2) {
-        *pc += imm_ext;
+        *pc += imm_ext - 4;
       }
       break;
     case FUNCT3_BGEU:
       if (rs1 >= (uint32_t)rs2) {
-        *pc += imm_ext;
+        *pc += imm_ext - 4;
       }
       break;
   }
@@ -291,7 +298,8 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
   switch (decoded.opcode) {
     case JAL_OPCODE:
       regs[rd] = *pc + 4;
-      *pc      = *pc + (imm << 12 >> 12); // TODO: GPT;
+      *pc      = *pc + ((int32_t)(imm << 12) >> 12);
+      *pc      = *pc - 4;
       break;
     default:
       printf("Error: Unknown J-type instruction\n");
