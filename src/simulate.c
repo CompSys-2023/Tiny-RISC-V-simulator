@@ -11,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-const long int max_instructions = 100000;
+const long int max_instructions = 1000;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
@@ -30,18 +30,22 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
   while (1 && instruction_count < max_instructions) {
     uint32_t instruction = memory_rd_w(mem, pc);
     int32_t  opcode      = instruction & 0x7f;
-    printf("PC: %05x, Instruction: %08x\n", pc, instruction);
-    // print_registers(registers, NUM_REGISTERS);
+    printf("[%d]: PC: %05x, Instruction: %08x\n", instruction_count, pc,
+           instruction);
 
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
+    uint32_t  prev_pc             = pc;
     execute_functions[opcode](decoded_instruction, mem, &payload);
 
     if (log_file != NULL) {
       fprintf(log_file, "PC: %05x, Instruction: %08x\n", pc, instruction);
     }
 
-    pc += 4;
+    if (prev_pc == pc) {
+      pc += 4;
+    }
+
     instruction_count++;
   }
   return instruction_count;
