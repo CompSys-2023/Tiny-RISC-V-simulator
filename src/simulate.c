@@ -11,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-const long int max_instructions = 1000;
+const long int max_instructions = 1;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
@@ -46,29 +46,24 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
       pc += 4;
     }
 
+    testing(registers, instruction_count);
+
     instruction_count++;
   }
   return instruction_count;
   printf("DONE SIMULATE\n");
 }
 
-void print_registers(int32_t regs[], int num_regs) {
-  // Printing the first row (register names)
-  for (int i = 0; i < num_regs; ++i) {
-    printf("| x%d ", i);
+void testing(int32_t* x, int32_t i) {
+  switch(i){
+    case 0:
+      int32_t a = 0x1000 << 12;
+      if(a == x[10]) {
+        printf("Passed\n");
+        printf("x[0] = %08x\n", x[10]);
+      }
+      break;
   }
-  printf("|\n");
-
-  // Printing the horizontal separator
-  for (int i = 0; i < num_regs; ++i) {
-    printf("------");
-  }
-  printf("\n");
-
-  // Printing the second row (register values)
-  for (int i = 0; i < num_regs; ++i) {
-    printf("| %d ",
-           regs[i]); // Adjust the spacing depending on expected value range
-  }
-  printf("|\n");
 }
+
+//

@@ -4,8 +4,9 @@
 
 // registers
 #define NUM_REGISTERS 32
+#
 #define REG_A7 17
-#define REG_A0 10
+#define REG_A0 11
 
 // ██████████████████████████████████████████
 // █▄─▄▄▀███▀▀▀▀▀████─▄─▄─█▄─█─▄█▄─▄▄─█▄─▄▄─█
