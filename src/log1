@@ -489,7 +489,7 @@
 489 -- Insn --    10598:	02010413          	addi	s0,sp,32
 490 -- Insn --    1059c:	fea42623          	sw	a0,-20(s0)
 491 -- Insn --    105a0:	000117b7          	lui	a5,0x11
-492 -- Insn --    105a4:	0007a223          	sw	zero,4(a5) # 11004 <initialized>
+492 -- Insn --    105a4:	0007a223          	    alized>
 493 -- Insn --    105a8:	000117b7          	lui	a5,0x11
 494 -- Insn --    105ac:	fec42703          	lw	a4,-20(s0)
 495 -- Insn --    105b0:	00e7a023          	sw	a4,0(a5) # 11000 <free_space>
@@ -668,5 +668,15 @@ PC: 10208, Instruction: 00000097
 PC: 1020c, Instruction: 388080e7
 PC: 10590, Instruction: fe010113
 PC: 10594, Instruction: 00812e23
+PC: 10598, Instruction: 02010413
+PC: 1059c, Instruction: fea42623
+PC: 105a0, Instruction: 000117b7
 
-Simulated 7 instructions in 111 ticks (0.063063 MIPS)
+
+PC: 105a4, Instruction: 0007a223
+PC: 105a8, Instruction: 000117b7
+PC: 105ac, Instruction: fec42703
+PC: 105b0, Instruction: 00e7a023
+PC: 105b4, Instruction: 00000013
+
+Simulated 15 instructions in 87 ticks (0.172414 MIPS)

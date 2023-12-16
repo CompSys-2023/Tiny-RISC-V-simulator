@@ -671,5 +671,15 @@ PC: 10594, Instruction: 00812e23
 PC: 10598, Instruction: 02010413
 PC: 1059c, Instruction: fea42623
 PC: 105a0, Instruction: 000117b7
+PC: 105a4, Instruction: 0007a223
+PC: 105a8, Instruction: 000117b7
+PC: 105ac, Instruction: fec42703
+PC: 105b0, Instruction: 00e7a023
+PC: 105b4, Instruction: 00000013
+PC: 105b8, Instruction: 01c12403
+PC: 105bc, Instruction: 02010113
+PC: 105c0, Instruction: 00008067
+PC: 10210, Instruction: 01000537
+PC: 10214, Instruction: 00000097
 
-Simulated 10 instructions in 166 ticks (0.060241 MIPS)
+Simulated 20 instructions in 156 ticks (0.128205 MIPS)

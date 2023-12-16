@@ -77,7 +77,7 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
         regs[rd] = rs1 << rs2;
       } else if (decoded.funct7 == FUNCT7_MULH) {
         int64_t result = (int64_t)rs1 * (int64_t)rs2;
-        regs[rd]       = (int32_t)(result >> 32);
+        regs[rd] = (int32_t)(result >> 32); // upper 32 bits of the int64_t
       }
       break;
     case FUNCT3_SRL_SRA_DIVU:
@@ -113,6 +113,7 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown R-type instruction\n");
       break;
   }
+  free(instr);
 }
 
 void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
@@ -124,9 +125,9 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t             imm     = decoded.imm;
 
   if (decoded.opcode == I_TYPE_OPCODE_JALR) {
-    // rd = PC+4; PC = rs1 + imm
     regs[rd] = *pc + 4;
-    *pc      = (rs1 + imm)&~1; // Changed from rs1 + imm, which is the exact same as JAL
+    *pc      = (rs1 + imm) & ~1;
+    free(instr);
     return;
   }
 
@@ -134,7 +135,6 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
     switch (decoded.funct3) {
       case FUNCT3_LB:
         regs[rd] = memory_rd_b(mem, rs1 + imm);
-        // regs[rd]      = ((int32_t)(value0 << 24)) >> 24;
         break;
       case FUNCT3_LH:
         regs[rd] = memory_rd_h(mem, rs1 + imm);
@@ -156,6 +156,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         printf("Error: Unknown I-type-load instruction\n");
         break;
     }
+    free(instr);
     return;
   }
 
@@ -168,7 +169,9 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
       case 2: // print float
         printf("%f", regs[REG_A0]);
         break;
-
+      case 3:
+        exit(0);
+        break;
       case 4: // print string
         char* str = memory_rd_str(mem, regs[REG_A0]);
         if (str != NULL) {
@@ -185,6 +188,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         break;
     }
     printf("=====================================\n");
+    free(instr);
     return;
   }
 
@@ -225,6 +229,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown I-type instruction\n");
       break;
   }
+  free(instr);
 }
 
 void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
@@ -249,6 +254,7 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown S-type instruction\n");
       break;
   }
+  free(instr);
 }
 
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
@@ -300,6 +306,7 @@ void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown B-type instruction\n");
       break;
   }
+  free(instr);
 }
 
 void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
@@ -318,6 +325,7 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown J-type instruction\n");
       break;
   }
+  free(instr);
 }
 
 void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
@@ -329,7 +337,7 @@ void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
 
   switch (decoded.opcode) {
     case LUI_OPCODE:
-      regs[rd] = imm << 12;
+      regs[rd] = (uint32_t)imm << 12;
       break;
     case AUIPC_OPCODE:
       regs[rd] = *pc + (imm << 12);
@@ -338,4 +346,5 @@ void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown U-type instruction\n");
       break;
   }
+  free(instr);
 }

@@ -107,9 +107,12 @@ int read_exec(struct memory* mem, struct assembly* as, const char* name,
     if (log_file)
       fprintf(log_file, "%d -- %s -- %s\n", count, msg, line);
   }
-  if (start_addr != -1)
+  if (start_addr != -1) {
+    fclose(fp);
     return start_addr;
+  }
   printf("Start symbol not found in file. Terminating");
+
   fclose(fp);
 
   exit(-1);
