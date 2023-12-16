@@ -51,10 +51,19 @@ typedef struct {
   int32_t  imm : 20;
 } jtype_instruction_t;
 
+typedef struct {
+  int32_t*       x_before;
+  int32_t*       x_after;
+  int32_t        pc_before;
+  int32_t        pc_after;
+  struct memory* mem;
+  int32_t        instr;
+} test_t;
+
 // Simuler RISC-V program i givet lager og fra given start adresse
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,
                   FILE* log_file);
 
-void testing(int32_t* x, int32_t* prev, int32_t i);
+void testing(int32_t* x, int32_t* prev, int pc_current, int pc_prev, int32_t i);
 
 #endif

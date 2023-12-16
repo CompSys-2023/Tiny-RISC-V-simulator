@@ -35,7 +35,6 @@ char* memory_rd_str(struct memory* mem, int addr) {
 }
 
 void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
-  printf("Executing R:\n");
   rtype_instruction_t decoded = *(rtype_instruction_t*)instr;
   int32_t*            regs    = payload->regs;
   int32_t             rs1     = regs[decoded.rs1];
@@ -114,7 +113,6 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown R-type instruction\n");
       break;
   }
-  printf("R: Completed\n");
 }
 
 void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
@@ -124,8 +122,6 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t             rs1     = regs[decoded.rs1];
   uint32_t            rd      = decoded.rd;
   int32_t             imm     = decoded.imm;
-
-  printf("Executing I:\n");
 
   if (decoded.opcode == I_TYPE_OPCODE_JALR) {
     // rd = PC+4; PC = rs1 + imm
@@ -229,11 +225,9 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown I-type instruction\n");
       break;
   }
-  printf("I: Completed\n");
 }
 
 void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
-  printf("Executing S:\n");
   stype_instruction_t decoded = *(stype_instruction_t*)instr;
   int32_t*            regs    = payload->regs;
   int32_t             rs1     = regs[decoded.rs1];
@@ -255,8 +249,6 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown S-type instruction\n");
       break;
   }
-
-  printf("S: Completed\n");
 }
 
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
@@ -311,7 +303,6 @@ void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
 }
 
 void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
-  printf("Executing J:\n");
   jtype_instruction_t decoded = *(jtype_instruction_t*)instr;
   uint32_t*           pc      = payload->pc;
   int32_t*            regs    = payload->regs;
@@ -327,11 +318,9 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown J-type instruction\n");
       break;
   }
-  printf("J: Completed\n");
 }
 
 void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
-  printf("Executing U:\n");
   utype_instruction_t decoded = *(utype_instruction_t*)instr;
   uint32_t*           pc      = payload->pc;
   uint32_t            rd      = decoded.rd;
@@ -349,5 +338,4 @@ void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
       printf("Error: Unknown U-type instruction\n");
       break;
   }
-  printf("U: Completed\n");
 }

@@ -31,7 +31,6 @@ itype_instruction_t* decode_I_type(uint32_t instruction) {
   decoded->funct3              = (instruction >> 12) & 0x7;
   decoded->rs1                 = (instruction >> 15) & 0x1f;
   decoded->imm                 = (instruction >> 20) & 0xfff;
-
   return decoded;
 }
 
