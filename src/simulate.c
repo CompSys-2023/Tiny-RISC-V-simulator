@@ -26,7 +26,7 @@
 #define ASSERT_MULTIPLE(test1, test2) ((test1) && (test2))
 #endif
 
-const long int max_instructions = 7;
+const long int max_instructions = 10;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
@@ -109,7 +109,10 @@ int test(test_t test_data) {
       int32_t expected = x_before[REG_SP] + x_before[REG_A0];
       return ASSERT_EQUAL_INT(expected, x_after[REG_SP], "mv	sp,a0");
     }
-    // skip 2 (lui)
+    case 2: { // DOUBLE
+      int32_t expected = 0x2000 << 12;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A0], "lui a0, 0x2000");
+    }
     case 3: {
       int32_t expected = pc_before + (x_before[REG_RA] << 12);
       return ASSERT_EQUAL_INT(expected, x_after[REG_RA], "auipc ra,0x0");
@@ -117,10 +120,10 @@ int test(test_t test_data) {
     case 4: {
       int32_t expected_ra = pc_before + 4;
       int     result1 =
-          ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "jalr	904(ra)");
+          ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "(1) jalr	904(ra)");
 
       int32_t expected_2 = x_before[REG_RA] + 904;
-      int     result2 = ASSERT_EQUAL_INT(expected_2, pc_after, "jalr	904(ra)");
+      int     result2 = ASSERT_EQUAL_INT(expected_2, pc_after, "(2) jalr	904(ra)");
 
       return ASSERT_MULTIPLE(result1, result2);
     }
@@ -129,9 +132,30 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(expected, x_after[REG_SP], "addi	sp,sp,-32");
     }
     case 6: {
-      printf("mem function poitner %p\n", mem);
-      int32_t expected = memory_rd_w(mem, x_before[REG_SP] + 28);
-      return ASSERT_EQUAL_INT(expected, x_after[REG_SP], "sw	a0,28(sp)");
+      //printf("mem function poitner %p\n", mem);
+      int32_t expected = x_before[REG_SP];
+      // int32_t address  = x_before[REG_SP + 28]; //outputs 8257
+      int32_t address  = x_before[REG_SP] + 28; // outputs 0
+      int32_t actual = memory_rd_w(mem, address);
+      printf("Memory read from address: %d\n", memory_rd_w(mem, address));
+      return ASSERT_EQUAL_INT(expected, actual, "sw	a0,28(sp)");
+    }
+    case 7: { // DOUBLE
+      int32_t expected = x_before[REG_SP] + 32;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_S0], "addi	s0,sp,32");
+    }
+    case 8: { // DOUBLE
+      //printf("mem function poitner %p\n", mem);
+      int32_t expected = x_before[REG_SP];
+      // int32_t address  = x_before[REG_SP + 28]; //outputs 8257
+      int32_t address  = x_before[REG_S0] -20; // outputs 0
+      int32_t actual = memory_rd_w(mem, address);
+      printf("Memory read from address: %d\n", memory_rd_w(mem, address));
+      return ASSERT_EQUAL_INT(expected, actual, "sw	a0,-20(s0)");
+    }
+    case 9: { // DOUBLE
+      int32_t expected = 0x11 << 12;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "lui	a5,0x11");
     }
   }
   return 0;

@@ -126,7 +126,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   if (decoded.opcode == I_TYPE_OPCODE_JALR) {
     // rd = PC+4; PC = rs1 + imm
     regs[rd] = *pc + 4;
-    *pc      = rs1 + imm;
+    *pc      = (rs1 + imm)&~1; // Changed from rs1 + imm, which is the exact same as JAL
     return;
   }
 
