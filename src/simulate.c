@@ -27,13 +27,12 @@ enum Colors {
 
 #define ASSERT_EQUAL_INT(expected, actual, message)                            \
   (((expected) == (actual))                                                    \
-       ? (printf("\033[38;5;82m[\033[38;5;46m\033[1mPASSED\033[38;5;"          \
-                 "82m]\033[0m:"                                                \
-                 "\033[38;"                                                    \
-                 "5;46m `%s`: "                                                \
-                 "Expected: %d, "                                              \
-                 "Actual: %d\n\033[0m",                                        \
-                 message, (expected), (actual)),                               \
+       ? (printf(                                                              \
+              "\033[38;5;46m[\033[38;5;82m\033[1mPASSED\033[38;5;46m]\033[0m:" \
+              "\033[38;5;82m`%s`: "                                            \
+              "Expected: %d, "                                                 \
+              "Actual: %d\n\033[0m",                                           \
+              message, (expected), (actual)),                                  \
           1)                                                                   \
        : (printf("\033[38;5;196m[\033[91m\033[1m\033[4mFAILED\033[38;5;196m]"  \
                  "\033[0m:"                                                    \
