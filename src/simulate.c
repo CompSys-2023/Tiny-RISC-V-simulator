@@ -13,23 +13,12 @@
 #define TEST_MODE 1 // 1 for testing, 0 for not testingtests_total
 
 #if TEST_MODE
-/*
-enum Colors {
-  HEADER    = "\033[95m",
-  OKGREEN   = "\033[92m",
-  WARNING   = "\033[93m",
-  FAIL      = "\033[91m",
-  ENDC      = "\033[0m",
-  BOLD      = "\033[1m",
-  UNDERLINE = "\033[4m"
-}
-*/
 
 #define ASSERT_EQUAL_INT(expected, actual, message)                            \
   (((expected) == (actual))                                                    \
        ? (printf(                                                              \
               "\033[38;5;46m[\033[38;5;82m\033[1mPASSED\033[38;5;46m]\033[0m:" \
-              "\033[38;5;82m `%s`: "                                            \
+              "\033[38;5;82m `%s`: "                                           \
               "Expected: %d, "                                                 \
               "Actual: %d\n\033[0m",                                           \
               message, (expected), (actual)),                                  \
@@ -46,7 +35,7 @@ enum Colors {
 #define ASSERT_MULTIPLE(test1, test2) ((test1) && (test2))
 #endif
 
-const long int max_instructions = 30;
+const long int max_instructions = 600;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
@@ -138,20 +127,21 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(expected, x_after[REG_RA], "auipc ra,0x0");
     }
     case 4: {
-
       int32_t expected_ra = pc_before + 4;
-      int32_t result1 = ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "(1) jalr	904(ra)");
+      int32_t result1 =
+          ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "(1) jalr	904(ra)");
       // one more test for plus imm
 
       int32_t expected_pc = x_before[REG_RA] + 904;
-      //printf("pc_after in dec: %d\n", pc_after);
-      //printf("pc_after in hexa: %x\n", pc_after);
-      int32_t result2 = ASSERT_EQUAL_INT(expected_pc, pc_after, "(2) jalr	904(ra)");
+      // printf("pc_after in dec: %d\n", pc_after);
+      // printf("pc_after in hexa: %x\n", pc_after);
+      int32_t result2 =
+          ASSERT_EQUAL_INT(expected_pc, pc_after, "(2) jalr	904(ra)");
       return ASSERT_MULTIPLE(result1, result2);
     }
     case 5: {
-      //int32_t expected = x_before[REG_SP] - 32;
-      int32_t expected = x_before[REG_SP] -32;
+      // int32_t expected = x_before[REG_SP] - 32;
+      int32_t expected = x_before[REG_SP] - 32;
       return ASSERT_EQUAL_INT(expected, x_after[REG_SP], "addi	sp,sp,-32");
     }
     case 6: {
@@ -159,11 +149,11 @@ int test(test_t test_data) {
       int32_t expected = memory_rd_w(mem, address);
       return ASSERT_EQUAL_INT(expected, x_after[REG_S0], "sw	s0,28(sp)");
     }
-    case 7: { 
+    case 7: {
       int32_t expected = x_before[REG_SP] + 32;
       return ASSERT_EQUAL_INT(expected, x_after[REG_S0], "addi	s0,sp,32");
     }
-    case 8: { 
+    case 8: {
       int32_t address  = x_before[REG_S0] - 20;
       int32_t expected = memory_rd_w(mem, address);
       return ASSERT_EQUAL_INT(expected, x_after[REG_A0], "sw	a0,-20(s0)");
@@ -217,8 +207,7 @@ int test(test_t test_data) {
     }
     case 20: {
       int32_t expected_ra = pc_before + 4;
-      return 
-          ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "jalr	16(ra)");
+      return ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "jalr	16(ra)");
     }
     case 21: {
       int32_t expected = x_before[REG_SP] - 48;
