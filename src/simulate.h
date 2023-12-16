@@ -28,7 +28,7 @@ typedef struct {
   uint32_t funct3 : 3;
   uint32_t rs1 : 5;
   uint32_t rs2 : 5;
-  int32_t  imm : 12; // Combines imm_4_0 and imm_11_5
+  int32_t  imm : 12;
 } stype_instruction_t;
 
 typedef struct {
@@ -54,5 +54,7 @@ typedef struct {
 // Simuler RISC-V program i givet lager og fra given start adresse
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,
                   FILE* log_file);
+
+void testing(int32_t* x, int32_t* prev, int32_t i);
 
 #endif
