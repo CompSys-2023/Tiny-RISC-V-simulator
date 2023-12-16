@@ -36,77 +36,75 @@ char* memory_rd_str(struct memory* mem, int addr) {
 
 void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
   rtype_instruction_t decoded = *(rtype_instruction_t*)instr;
-  int32_t*            regs    = payload->regs;
-  int32_t             rs1     = regs[decoded.rs1];
-  int32_t             rs2     = regs[decoded.rs2];
+  int32_t*            x    = payload->x;
   int32_t             rd      = decoded.rd;
 
   switch (decoded.funct3) {
     case FUNCT3_ADD_SUB_MUL:
       if (decoded.funct7 == FUNCT7_ADD) {
-        regs[rd] = rs1 + rs2;
+        x[rd] = x[decoded.rs1] + x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_SUB) {
-        regs[rd] = rs1 - rs2;
+        x[rd] = x[decoded.rs1] - x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_MUL) {
-        regs[rd] = rs1 * rs2;
+        x[rd] = x[decoded.rs1] * x[decoded.rs2];
       }
       break;
     case FUNCT3_XOR_DIV:
       if (decoded.funct7 == FUNCT7_XOR) {
-        regs[rd] = rs1 ^ rs2;
+        x[rd] = x[decoded.rs1] ^ x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_DIV) {
-        regs[rd] = rs1 / rs2;
+        x[rd] = x[decoded.rs1] / x[decoded.rs2];
       }
       break;
     case FUNCT3_OR_REM:
       if (decoded.funct7 == FUNCT7_OR) {
-        regs[rd] = rs1 | rs2;
+        x[rd] = x[decoded.rs1] | x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_REM) {
-        regs[rd] = rs1 % rs2;
+        x[rd] = x[decoded.rs1] % x[decoded.rs2];
       }
       break;
     case FUNCT3_AND_REMU:
       if (decoded.funct7 == FUNCT7_AND) {
-        regs[rd] = rs1 & rs2;
+        x[rd] = x[decoded.rs1] & x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_REMU) {
-        regs[rd] = (uint32_t)rs1 % (uint32_t)rs2;
+        x[rd] = (uint32_t)x[decoded.rs1] % (uint32_t)x[decoded.rs2];
       }
       break;
     case FUNCT3_SLL_MULH:
       if (decoded.funct7 == FUNCT7_SLL) {
-        regs[rd] = rs1 << rs2;
+        x[rd] = x[decoded.rs1] << x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_MULH) {
-        int64_t result = (int64_t)rs1 * (int64_t)rs2;
-        regs[rd] = (int32_t)(result >> 32); // upper 32 bits of the int64_t
+        int64_t result = (int64_t)x[decoded.rs1] * (int64_t)x[decoded.rs2];
+        x[rd] = (int32_t)(result >> 32); // upper 32 bits of the int64_t
       }
       break;
     case FUNCT3_SRL_SRA_DIVU:
       if (decoded.funct7 == FUNCT7_SRL) {
-        regs[rd] = (uint32_t)rs1 >> rs2;
+        x[rd] = (uint32_t)x[decoded.rs1] >> x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_SRA) {
-        regs[rd] = rs1 >> rs2;
+        x[rd] = x[decoded.rs1] >> x[decoded.rs2];
       } else if (decoded.funct7 == FUNCT7_DIVU) {
-        regs[rd] = (uint32_t)rs1 / (uint32_t)rs2;
+        x[rd] = (uint32_t)x[decoded.rs1] / (uint32_t)x[decoded.rs2];
       }
       break;
     case FUNCT3_SLT_MULSU:
       if (decoded.funct7 == FUNCT7_SLT) {
-        regs[rd] = rs1 < rs2 ? 1 : 0;
+        x[rd] = x[decoded.rs1] < x[decoded.rs2] ? 1 : 0;
       } else if (decoded.funct7 == FUNCT7_MULSU) {
-        int64_t  signed_rs1   = (int32_t)rs1;
-        uint64_t unsigned_rs2 = (uint32_t)rs2;
+        int64_t  signed_rs1   = (int32_t)x[decoded.rs1];
+        uint64_t unsigned_rs2 = (uint32_t)x[decoded.rs2];
         uint64_t result       = signed_rs1 * unsigned_rs2;
-        regs[rd]              = (int32_t)(result >> 32);
+        x[rd]              = (int32_t)(result >> 32);
       }
       break;
     case FUNCT3_SLTU_MULU:
       if (decoded.funct7 == FUNCT7_SLTU) {
-        regs[rd] = (uint32_t)rs1 < (uint32_t)rs2 ? 1 : 0;
+        x[rd] = (uint32_t)x[decoded.rs1] < (uint32_t)x[decoded.rs2] ? 1 : 0;
       } else if (decoded.funct7 == FUNCT7_MULU) {
-        uint64_t unsigned_rs1 = (uint32_t)rs1;
-        uint64_t unsigned_rs2 = (uint32_t)rs2;
+        uint64_t unsigned_rs1 = (uint32_t)x[decoded.rs1];
+        uint64_t unsigned_rs2 = (uint32_t)x[decoded.rs2];
         uint64_t result       = unsigned_rs1 * unsigned_rs2;
-        regs[rd]              = (int32_t)(result >> 32);
+        x[rd]              = (int32_t)(result >> 32);
       }
       break;
     default:
@@ -119,14 +117,14 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
 void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   itype_instruction_t decoded = *(itype_instruction_t*)instr;
   uint32_t*           pc      = payload->pc;
-  int32_t*            regs    = payload->regs;
-  int32_t             rs1     = regs[decoded.rs1];
-  uint32_t            rd      = decoded.rd;
-  int32_t             imm     = decoded.imm;
+  int32_t*            x    = payload->x;
 
   if (decoded.opcode == I_TYPE_OPCODE_JALR) {
-    regs[rd] = *pc + 4;
-    *pc      = (rs1 + imm) & ~1;
+    //printf("decoded.rs1 = %x\n", decoded.rs1);
+    //printf("decoded.rd = %x\n", decoded.rd);
+    int32_t rs1 = x[decoded.rs1];
+    x[decoded.rd] = *pc + 4;
+    *pc      = (rs1 + decoded.imm) & ~1;
     free(instr);
     return;
   }
@@ -134,23 +132,23 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   if (decoded.opcode == I_TYPE_OPCODE_LOAD) {
     switch (decoded.funct3) {
       case FUNCT3_LB:
-        regs[rd] = memory_rd_b(mem, rs1 + imm);
+        x[decoded.rd] = memory_rd_b(mem, x[decoded.rs1] + decoded.imm);
         break;
       case FUNCT3_LH:
-        regs[rd] = memory_rd_h(mem, rs1 + imm);
-        // regs[rd]       = ((int32_t)(value1 << 16)) >> 16;
+        x[decoded.rd] = memory_rd_h(mem, x[decoded.rs1] + decoded.imm);
+        // x[rd]       = ((int32_t)(value1 << 16)) >> 16;
         break;
       case FUNCT3_LW:
-        regs[rd] = memory_rd_w(mem, rs1 + imm);
-        // regs[rd]       = value2;
+        x[decoded.rd] = memory_rd_w(mem, x[decoded.rs1] + decoded.imm);
+        // x[rd]       = value2;
         break;
       case FUNCT3_LBU:
-        regs[rd] = (unsigned)memory_rd_b(mem, rs1 + imm);
-        // regs[rd]       = (int32_t)value3;
+        x[decoded.rd] = (unsigned)memory_rd_b(mem, x[decoded.rs1] + decoded.imm);
+        // x[rd]       = (int32_t)value3;
         break;
       case FUNCT3_LHU:
-        regs[rd] = (unsigned)memory_rd_h(mem, rs1 + imm);
-        // regs[rd]        = (int32_t)value4;
+        x[decoded.rd] = (unsigned)memory_rd_h(mem, x[decoded.rs1] + decoded.imm);
+        // x[rd]        = (int32_t)value4;
         break;
       default:
         printf("Error: Unknown I-type-load instruction\n");
@@ -162,18 +160,18 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
 
   if (decoded.opcode == I_TYPE_OPCODE_ECALL) {
     printf("=============== ECALL ===============\n");
-    switch (regs[REG_A7]) {
+    switch (x[REG_A7]) {
       case 1: // print integer
-        printf("%d", regs[REG_A0]);
+        printf("%d", x[REG_A0]);
         break;
       case 2: // print float
-        printf("%f", regs[REG_A0]);
+        printf("%f", x[REG_A0]);
         break;
       case 3:
         exit(0);
         break;
       case 4: // print string
-        char* str = memory_rd_str(mem, regs[REG_A0]);
+        char* str = memory_rd_str(mem, x[REG_A0]);
         if (str != NULL) {
           printf("%s", str);
         } else {
@@ -184,7 +182,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         exit(0);
         break;
       default:
-        printf("Error: Unknown system call ID %d\n", regs[REG_A7]);
+        printf("Error: Unknown system call ID %x\n", x[REG_A7]);
         break;
     }
     printf("=====================================\n");
@@ -194,36 +192,36 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
 
   switch (decoded.funct3) {
     case FUNCT3_ADDI:
-      regs[rd] = rs1 + imm;
+      x[decoded.rd] = x[decoded.rs1] + decoded.imm;
       break;
     case FUNCT3_XORI:
-      regs[rd] = rs1 ^ imm;
+      x[decoded.rd] = x[decoded.rs1] ^ decoded.imm;
       break;
     case FUNCT3_ORI:
-      regs[rd] = rs1 | imm;
+      x[decoded.rd] =x[decoded.rs1] | decoded.imm;
       break;
     case FUNCT3_ANDI:
-      regs[rd] = rs1 & imm;
+      x[decoded.rd] = x[decoded.rs1] & decoded.imm;
       break;
     case FUNCT3_SLLI:
-      regs[rd] = rs1 << (imm & 0x1F);
+      x[decoded.rd] = x[decoded.rs1] << (decoded.imm & 0x1F);
       break;
     case FUNCT3_SRLI_SRAI:
-      if (imm >> 10 == FUNCT7_SRLI) {
-        regs[rd] = rs1 >> (imm & 0x1F);
-      } else if (imm >> 10 == FUNCT7_SRAI) {
+      if (decoded.imm >> 10 == FUNCT7_SRLI) {
+        x[decoded.rd] = x[decoded.rs1] >> (decoded.imm & 0x1F);
+      } else if (decoded.imm >> 10 == FUNCT7_SRAI) {
         // TODO: MSB EXTEND
-        regs[rd] = rs1 >> (imm & 0x1F);
+        x[decoded.rd] = x[decoded.rs1] >> (decoded.imm & 0x1F);
       }
       break;
     case FUNCT3_SLTI:
-      regs[rd] = rs1 < imm ? 1 : 0;
+      x[decoded.rd] = x[decoded.rs1] < decoded.imm ? 1 : 0;
       break;
     case FUNCT3_SLTIU:
       // TODO: zero extend
-      uint32_t unsigned_rs1 = (uint32_t)rs1;
-      uint32_t unsigned_imm = (uint32_t)imm;
-      regs[rd]              = unsigned_rs1 < unsigned_imm ? 1 : 0;
+      uint32_t unsigned_rs1 = (uint32_t)x[decoded.rs1];
+      uint32_t unsigned_imm = (uint32_t)decoded.imm;
+      x[decoded.rd]              = unsigned_rs1 < unsigned_imm ? 1 : 0;
       break;
     default:
       printf("Error: Unknown I-type instruction\n");
@@ -234,9 +232,9 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
 
 void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   stype_instruction_t decoded = *(stype_instruction_t*)instr;
-  int32_t*            regs    = payload->regs;
-  int32_t             rs1     = regs[decoded.rs1];
-  int32_t             rs2     = regs[decoded.rs2];
+  int32_t*            x    = payload->x;
+  int32_t             rs1     = x[decoded.rs1];
+  int32_t             rs2     = x[decoded.rs2];
   int32_t             imm     = decoded.imm;
   int32_t             address = rs1 + imm;
 
@@ -260,46 +258,37 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
   btype_instruction_t decoded = *(btype_instruction_t*)instr;
   uint32_t*           pc      = payload->pc;
-  int32_t*            regs    = payload->regs;
-  int32_t             rs1     = regs[decoded.rs1];
-  int32_t             rs2     = regs[decoded.rs2];
-  int32_t             imm     = decoded.imm;
+  int32_t*            x    = payload->x;
 
   switch (decoded.funct3) {
     case FUNCT3_BEQ:
-      if (rs1 == rs2) {
-        *pc += imm;
+      if (x[decoded.rs1] == x[decoded.rs2]) {
+        *pc += decoded.imm;
       }
       break;
     case FUNCT3_BNE:
-      printf("=============\n");
-      printf("PC: %05x\n", *pc);
-      if (rs1 != rs2) {
-        *pc += imm;
-        printf("imm: %d\n", imm);
-        printf("PC: %05x\n", *pc);
+      if (x[decoded.rs1] != x[decoded.rs2]) {
+        *pc += decoded.imm;
       }
-      printf("PC: %05x\n", *pc);
-      printf("=============\n");
       break;
     case FUNCT3_BLT:
-      if (rs1 < rs2) {
-        *pc += imm;
+      if (x[decoded.rs1] < x[decoded.rs2]) {
+        *pc += decoded.imm;
       }
       break;
     case FUNCT3_BGE:
-      if (rs1 >= rs2) {
-        *pc += imm;
+      if (x[decoded.rs1] >= x[decoded.rs2]) {
+        *pc += decoded.imm;
       }
       break;
     case FUNCT3_BLTU:
-      if (rs1 < (uint32_t)rs2) {
-        *pc += imm;
+      if (x[decoded.rs1] < (uint32_t)x[decoded.rs2]) {
+        *pc += decoded.imm;
       }
       break;
     case FUNCT3_BGEU:
-      if (rs1 >= (uint32_t)rs2) {
-        *pc += imm;
+      if (x[decoded.rs1] >= (uint32_t)x[decoded.rs2]) {
+        *pc += decoded.imm;
       }
       break;
     default:
@@ -312,14 +301,12 @@ void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
 void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
   jtype_instruction_t decoded = *(jtype_instruction_t*)instr;
   uint32_t*           pc      = payload->pc;
-  int32_t*            regs    = payload->regs;
-  uint32_t            rd      = decoded.rd;
-  uint32_t            imm     = decoded.imm;
+  int32_t*            x    = payload->x;
 
   switch (decoded.opcode) {
     case JAL_OPCODE:
-      regs[rd] = *pc + 4;
-      *pc += imm;
+      x[decoded.rd] = *pc + 4;
+      *pc += decoded.imm;
       break;
     default:
       printf("Error: Unknown J-type instruction\n");
@@ -331,16 +318,14 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
 void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
   utype_instruction_t decoded = *(utype_instruction_t*)instr;
   uint32_t*           pc      = payload->pc;
-  uint32_t            rd      = decoded.rd;
-  int32_t*            regs    = payload->regs;
-  int32_t             imm     = decoded.imm;
+  int32_t*            x    = payload->x;
 
   switch (decoded.opcode) {
     case LUI_OPCODE:
-      regs[rd] = (uint32_t)imm << 12;
+      x[decoded.rd] = (uint32_t)decoded.imm << 12;
       break;
     case AUIPC_OPCODE:
-      regs[rd] = *pc + (imm << 12);
+      x[decoded.rd] = *pc + (decoded.imm << 12);
       break;
     default:
       printf("Error: Unknown U-type instruction\n");

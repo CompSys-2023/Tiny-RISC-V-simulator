@@ -4,7 +4,6 @@
 
 // registers
 #define NUM_REGISTERS 32
-#
 #define REG_ZERO 0
 #define REG_RA 1
 #define REG_SP 2

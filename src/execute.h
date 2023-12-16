@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 typedef struct {
-  int32_t*  regs;
+  int32_t*  x;
   uint32_t* pc;
 } payload_t;
 
