@@ -18,12 +18,12 @@ const long int max_instructions = 100000;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
+int32_t       registers[NUM_REGISTERS]                      = {0};
 
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,
                   FILE* log_file) {
-  int32_t  pc                       = start_addr;
-  long int instruction_count        = 0;
-  int32_t  registers[NUM_REGISTERS] = {0};
+  int32_t  pc                = start_addr;
+  long int instruction_count = 0;
 
 #if TEST_MODE
   int tests_passed = 0;
