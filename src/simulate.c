@@ -13,7 +13,6 @@
 #define TEST_MODE 1 // 1 for testing, 0 for not testingtests_total
 
 #if TEST_MODE
-
 #define ASSERT_EQUAL_INT(expected, actual, message)                            \
   (((expected) == (actual))                                                    \
        ? (printf(                                                              \
@@ -35,7 +34,7 @@
 #define ASSERT_MULTIPLE(test1, test2) ((test1) && (test2))
 #endif
 
-const long int max_instructions = 600;
+const long int max_instructions = 1000;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
@@ -58,10 +57,10 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 
   while (1 && instruction_count < max_instructions) {
     uint32_t  instruction         = memory_rd_w(mem, pc);
-    int32_t   opcode              = instruction & 0x7f;
+    uint32_t  opcode              = instruction & 0x7f;
+    uint32_t  pc_before           = pc;
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
-    uint32_t  pc_before           = pc;
 
 #if TEST_MODE
     int32_t previous_reg[NUM_REGISTERS];
@@ -96,7 +95,6 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 #endif
   return instruction_count;
 }
-
 #if TEST_MODE
 
 // expected er altid formentlig højst sandsynlig nok `x_prev` register
@@ -130,17 +128,12 @@ int test(test_t test_data) {
       int32_t expected_ra = pc_before + 4;
       int32_t result1 =
           ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "(1) jalr	904(ra)");
-      // one more test for plus imm
-
       int32_t expected_pc = x_before[REG_RA] + 904;
-      // printf("pc_after in dec: %d\n", pc_after);
-      // printf("pc_after in hexa: %x\n", pc_after);
       int32_t result2 =
           ASSERT_EQUAL_INT(expected_pc, pc_after, "(2) jalr	904(ra)");
       return ASSERT_MULTIPLE(result1, result2);
     }
     case 5: {
-      // int32_t expected = x_before[REG_SP] - 32;
       int32_t expected = x_before[REG_SP] - 32;
       return ASSERT_EQUAL_INT(expected, x_after[REG_SP], "addi	sp,sp,-32");
     }
@@ -249,8 +242,69 @@ int test(test_t test_data) {
       int32_t expected = x_before[REG_A5] - 36;
       return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "lw	a5,-36(s0)");
     }
-  }
+    case 30: {
+      int32_t expected = x_before[REG_A5] + 4;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "addi	a5,a5,4");
+    }
+    case 31: {
+      int32_t address  = x_before[REG_S0] - 24;
+      int32_t expected = memory_rd_w(mem, address);
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "sw	a5,-24(s0)");
+    }
+    case 32: { // !!!!!!!!!!!!!!!
+      int32_t expected = x_before[REG_S0] - 24;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A1], "lw	a1,-24(s0)");
+    }
+    case 33: { // !!!!!!!!!!!!!!!
+      int32_t expected = x_before[REG_S0] - 20;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A0], "lw	a0,-20(s0)");
+    }
+    case 34: {
+      int32_t expected = x_after[REG_RA] + (0x0 << 12);
+      return ASSERT_EQUAL_INT(expected, x_after[REG_RA], "auipc	ra,0x0");
+    }
+    case 35: {
+      int32_t expected_ra = pc_before + 4;
+      int32_t result1 =
+          ASSERT_EQUAL_INT(expected_ra, x_after[REG_RA], "(1) jalr	-332(ra)");
+      int32_t expected_pc = x_before[REG_RA] - 332;
+      int32_t result2 =
+          ASSERT_EQUAL_INT(expected_pc, pc_after, "(2) jalr	-332(ra)");
+      return ASSERT_MULTIPLE(result1, result2);
+    }
+    case 36: {
+      int32_t expected = x_before[REG_SP] - 64;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_SP], "addi	sp,sp,-64");
+    }
+    case 37: {
+      int32_t address  = x_before[REG_SP] + 60;
+      int32_t expected = memory_rd_w(mem, address);
+      return ASSERT_EQUAL_INT(expected, x_after[REG_RA], "sw	ra,60(sp)");
+    }
+    case 38: {
+      int32_t address  = x_before[REG_SP] + 56;
+      int32_t expected = memory_rd_w(mem, address);
+      return ASSERT_EQUAL_INT(expected, x_after[REG_S0], "sw	s0,56(sp)");
+    }
+    case 39: {
+      int32_t expected = x_before[REG_SP] + 64;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_S0], "addi	s0,sp,64");
+    }
+    case 40: {
+      int32_t address  = x_before[REG_S0] - 52;
+      int32_t expected = memory_rd_w(mem, address);
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A0], "sw	a0,-52(s0)");
+    }
+    case 41: {
+      int32_t address  = x_before[REG_S0] - 56;
+      int32_t expected = memory_rd_w(mem, address);
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A1], "sw	a1,-56(s0)");
+    }
+    case 42: { // !!!!!!!!!!!!!!!
+      int32_t expected = x_before[REG_S0] - 52;
+      return ASSERT_EQUAL_INT(expected, x_after[REG_A4], "lw	a4,-52(s0))");
+    }
+  } // LI, BLT
   return 0;
 }
 #endif
-//

@@ -193,7 +193,7 @@
 193 -- Insn --    10148:	198080e7          	jalr	408(ra) # 102dc <terminate>
 194 -- Insn --    1014c:	fc842783          	lw	a5,-56(s0)
 195 -- Insn --    10150:	00478793          	addi	a5,a5,4
-196 -- Insn --    10154:	0007a783          	lw	a5,0(a5)
+196 -- Insn --    10154:	0007a783    !!    	lw	a5,0(a5)                 /// FUCK UP HERE
 197 -- Insn --    10158:	00078513          	mv	a0,a5
 198 -- Insn --    1015c:	00000097          	auipc	ra,0x0
 199 -- Insn --    10160:	2a8080e7          	jalr	680(ra) # 10404 <str_to_uns>
@@ -692,4 +692,52 @@ PC: 1023c, Instruction: 0007a783
 PC: 10240, Instruction: fef42623
 PC: 10244, Instruction: fdc42783
 
-Simulated 30 instructions in 347 ticks (0.086455 MIPS)
+
+PC: 10248, Instruction: 00478793  // Case 30
+PC: 1024c, Instruction: fef42423  // Case 31
+PC: 10250, Instruction: fe842583  // Case 32
+PC: 10254, Instruction: fec42503  // Case 33
+PC: 10258, Instruction: 00000097  // Case 34
+PC: 1025c, Instruction: eb4080e7  // Case 35
+PC: 1010c, Instruction: fc010113  // Case 36
+PC: 10110, Instruction: 02112e23  // Case 37
+PC: 10114, Instruction: 02812c23  // Case 38
+PC: 10118, Instruction: 04010413  // Case 39
+PC: 1011c, Instruction: fca42623  // Case 40
+PC: 10120, Instruction: fcb42423  // Case 41
+PC: 10124, Instruction: fcc42703  // Case 42
+PC: 10128, Instruction: 00100793
+PC: 1012c, Instruction: 02e7c063
+PC: 10130, Instruction: 000117b7
+PC: 10134, Instruction: 84478513
+PC: 10138, Instruction: 00000097
+PC: 1013c, Instruction: 1d4080e7    // JALR i main -> 1030c <print_string>
+PC: 1030c, Instruction: fe010113
+PC: 10310, Instruction: 00112e23
+PC: 10314, Instruction: 00812c23
+PC: 10318, Instruction: 02010413
+PC: 1031c, Instruction: fea42623
+PC: 10320, Instruction: 0200006f
+PC: 10340, Instruction: fec42783
+PC: 10344, Instruction: 0007c783
+PC: 10348, Instruction: fc079ee3
+PC: 10300, Instruction: 01c12403
+PC: 10304, Instruction: 02010113
+PC: 10308, Instruction: 00008067  // TERMINATE SLUT
+PC: 10140, Instruction: 00100513
+PC: 10144, Instruction: 00000097
+PC: 10148, Instruction: 198080e7
+PC: 102dc, Instruction: fe010113
+PC: 102e0, Instruction: 00812e23
+PC: 102e4, Instruction: 02010413
+PC: 102e8, Instruction: fea42623
+PC: 102ec, Instruction: fec42783
+PC: 102f0, Instruction: 00078513
+PC: 102f4, Instruction: 00300893
+PC: 102f8, Instruction: 00000073
+PC: 102fc, Instruction: 00000013
+PC: 10300, Instruction: 01c12403
+PC: 10304, Instruction: 02010113
+PC: 10308, Instruction: 00008067 // RET
+PC: 1014c, Instruction: fc842783
+PC: 10150, Instruction: 00478793

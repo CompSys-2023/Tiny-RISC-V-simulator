@@ -31,7 +31,8 @@ itype_instruction_t* decode_I_type(uint32_t instruction) {
   decoded->funct3              = (instruction >> 12) & 0x7;
   decoded->rs1                 = (instruction >> 15) & 0x1f;
   decoded->imm                 = (instruction >> 20) & 0xfff;
-  decoded->imm                 = (decoded->imm << 20) >> 20;
+  // sign extend
+  decoded->imm = (decoded->imm << 20) >> 20;
   return decoded;
 }
 
@@ -47,6 +48,7 @@ stype_instruction_t* decode_S_type(uint32_t instruction) {
   decoded->imm     = 0;
   decoded->imm |= imm_11_5 << 5;
   decoded->imm |= imm_4_0 << 0;
+  // sign extend
   decoded->imm = (decoded->imm << 20) >> 20;
   return decoded;
 }
@@ -66,6 +68,7 @@ btype_instruction_t* decode_B_type(uint32_t instruction) {
   decoded->imm |= imm_4_1 << 1;
   decoded->imm |= imm_10_5 << 5;
   decoded->imm |= imm_12 << 12;
+  // sign extend
   decoded->imm = (decoded->imm << 20) >> 20;
   return decoded;
 }
@@ -83,6 +86,7 @@ jtype_instruction_t* decode_J_type(uint32_t instruction) {
   decoded->imm |= imm_19_12 << 12;
   decoded->imm |= imm_11 << 11;
   decoded->imm |= imm_10_1 << 1;
+  // sign extend
   decoded->imm = (decoded->imm << 12) >> 12;
   return decoded;
 }
@@ -92,6 +96,5 @@ utype_instruction_t* decode_U_type(uint32_t instruction) {
   decoded->opcode              = instruction & 0x7f;
   decoded->rd                  = (instruction >> 7) & 0x1f;
   decoded->imm                 = (instruction >> 12) & 0xfffff;
-  decoded->imm                 = (decoded->imm << 12) >> 12;
   return decoded;
 }
