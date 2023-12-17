@@ -217,5 +217,5 @@
 
 #define TEST_SUMMARY_FORMAT                                                    \
   "\n============== TESTS OVERVIEW ==============\n"                           \
-  "Passed %d out of %d tests.\n"                                               \
+  "Passed %d out of 43 tests.\n"                                               \
   "============================================\n"
