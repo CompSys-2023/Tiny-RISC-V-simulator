@@ -1,3 +1,0 @@
-C:/Users/simon/dev/GitHub/RISC-V simulator (C)/cmake-build-debug/CMakeFiles/Assignment_0x5.dir
-C:/Users/simon/dev/GitHub/RISC-V simulator (C)/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/simon/dev/GitHub/RISC-V simulator (C)/cmake-build-debug/CMakeFiles/rebuild_cache.dir

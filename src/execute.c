@@ -285,12 +285,11 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
   uint32_t            rd      = decoded.rd;
   uint32_t*           pc      = payload->pc;
   int32_t*            regs    = payload->regs;
-  int32_t             imm     = decoded.imm << 1;
+  int32_t             imm     = decoded.imm;
 
   switch (opcode) {
     case JAL_OPCODE:
-      int temp2 = *pc + 4;
-      regs[rd]  = *pc + 4;
+      regs[rd] = *pc + 4;
       *pc += imm;
       break;
     default:
