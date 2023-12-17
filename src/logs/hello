@@ -273,4 +273,85 @@
 273 -- Insn --    10324:	4037d793          	srai	a5,a5,0x3
 274 -- Insn --    10328:	000016b7          	lui	a3,0x1
 275 -- Insn --    1032c:	08d75863          	bge	a4,a3,103bc <allocate+0xe8>
-276 -- Insn --    10330:	002
+276 -- Insn --    10330:	00279793          	slli	a5,a5,0x2
+277 -- Insn --    10334:	000116b7          	lui	a3,0x11
+278 -- Insn --    10338:	41868693          	addi	a3,a3,1048 # 11418 <small_block_headers>
+279 -- Insn --    1033c:	00d787b3          	add	a5,a5,a3
+280 -- Insn --    10340:	0007a683          	lw	a3,0(a5)
+281 -- Insn --    10344:	00068e63          	beqz	a3,10360 <allocate+0x8c>
+282 -- Insn --    10348:	0007a683          	lw	a3,0(a5)
+283 -- Insn --    1034c:	0006a603          	lw	a2,0(a3)
+284 -- Insn --    10350:	00c7a023          	sw	a2,0(a5)
+285 -- Insn --    10354:	00e6a023          	sw	a4,0(a3)
+286 -- Insn --    10358:	00468513          	addi	a0,a3,4
+287 -- Insn --    1035c:	00008067          	ret
+288 -- Insn --    10360:	00271693          	slli	a3,a4,0x2
+289 -- Insn --    10364:	00e686b3          	add	a3,a3,a4
+290 -- Insn --    10368:	00169693          	slli	a3,a3,0x1
+291 -- Insn --    1036c:	06300613          	li	a2,99
+292 -- Insn --    10370:	00d64863          	blt	a2,a3,10380 <allocate+0xac>
+293 -- Insn --    10374:	06400693          	li	a3,100
+294 -- Insn --    10378:	02e6c6b3          	div	a3,a3,a4
+295 -- Insn --    1037c:	02e686b3          	mul	a3,a3,a4
+296 -- Insn --    10380:	00011637          	lui	a2,0x11
+297 -- Insn --    10384:	41462583          	lw	a1,1044(a2) # 11414 <free_space>
+298 -- Insn --    10388:	00d586b3          	add	a3,a1,a3
+299 -- Insn --    1038c:	40d62a23          	sw	a3,1044(a2)
+300 -- Insn --    10390:	40e00533          	neg	a0,a4
+301 -- Insn --    10394:	40e686b3          	sub	a3,a3,a4
+302 -- Insn --    10398:	fab6e8e3          	bltu	a3,a1,10348 <allocate+0x74>
+303 -- Insn --    1039c:	0007a603          	lw	a2,0(a5)
+304 -- Insn --    103a0:	00c6a023          	sw	a2,0(a3)
+305 -- Insn --    103a4:	00d7a023          	sw	a3,0(a5)
+306 -- Insn --    103a8:	00a686b3          	add	a3,a3,a0
+307 -- Insn --    103ac:	feb6f8e3          	bgeu	a3,a1,1039c <allocate+0xc8>
+308 -- Insn --    103b0:	f99ff06f          	j	10348 <allocate+0x74>
+309 -- Insn --    103b4:	00000513          	li	a0,0
+310 -- Insn --    103b8:	00008067          	ret
+311 -- Insn --    103bc:	00000513          	li	a0,0
+312 -- Insn --    103c0:	00008067          	ret
+313 -- Ukendt -- 
+314 -- Entry -- 000103c4 <release>:
+315 -- Insn --    103c4:	ffc52703          	lw	a4,-4(a0)
+316 -- Insn --    103c8:	41f75793          	srai	a5,a4,0x1f
+317 -- Insn --    103cc:	0077f793          	andi	a5,a5,7
+318 -- Insn --    103d0:	00e787b3          	add	a5,a5,a4
+319 -- Insn --    103d4:	4037d793          	srai	a5,a5,0x3
+320 -- Insn --    103d8:	00279793          	slli	a5,a5,0x2
+321 -- Insn --    103dc:	00011737          	lui	a4,0x11
+322 -- Insn --    103e0:	41870713          	addi	a4,a4,1048 # 11418 <small_block_headers>
+323 -- Insn --    103e4:	00e787b3          	add	a5,a5,a4
+324 -- Insn --    103e8:	0007a703          	lw	a4,0(a5)
+325 -- Insn --    103ec:	fee52e23          	sw	a4,-4(a0)
+326 -- Insn --    103f0:	ffc50513          	addi	a0,a0,-4
+327 -- Insn --    103f4:	00a7a023          	sw	a0,0(a5)
+328 -- Insn --    103f8:	00008067          	ret
+PC: 100c0, Instruction: 01000537
+PC: 100c4, Instruction: 00050113
+PC: 100c8, Instruction: 02000537
+PC: 100cc, Instruction: 00000097
+PC: 100d0, Instruction: 1f4080e7
+PC: 102c0, Instruction: 000117b7
+PC: 102c4, Instruction: 4007a823
+PC: 102c8, Instruction: 000117b7
+PC: 102cc, Instruction: 40a7aa23
+PC: 102d0, Instruction: 00008067
+PC: 100d4, Instruction: 01000537
+PC: 100d8, Instruction: 00000097
+PC: 100dc, Instruction: 010080e7
+PC: 100e8, Instruction: ff010113
+PC: 100ec, Instruction: 00112623
+PC: 100f0, Instruction: 00450593
+PC: 100f4, Instruction: 00052503
+PC: 100f8, Instruction: 00000097
+PC: 100fc, Instruction: f7c080e7
+PC: 10074, Instruction: 000117b7
+PC: 10078, Instruction: 3fc7c503
+PC: 1007c, Instruction: 02050e63
+PC: 10080, Instruction: ff010113
+PC: 10084, Instruction: 00112623
+PC: 10088, Instruction: 00812423
+PC: 1008c, Instruction: 3fc78413
+PC: 10090, Instruction: 00140413
+PC: 10094, Instruction: 00000097
+PC: 10098, Instruction: 08c080e7

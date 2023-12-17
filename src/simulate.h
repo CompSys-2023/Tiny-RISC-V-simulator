@@ -10,8 +10,8 @@ typedef struct {
   uint32_t opcode : 7;
   uint32_t rd : 5;
   uint32_t funct3 : 3;
-  int32_t rs1 : 5;
-  int32_t rs2 : 5;
+  int32_t  rs1 : 5;
+  int32_t  rs2 : 5;
   uint32_t funct7 : 7;
 } rtype_instruction_t;
 
@@ -19,47 +19,37 @@ typedef struct {
   uint32_t opcode : 7;
   uint32_t rd : 5;
   uint32_t funct3 : 3;
-  int32_t rs1 : 5;
+  int32_t  rs1 : 5;
   int32_t  imm : 12; // Signed for immediate values
 } itype_instruction_t;
 
 typedef struct {
   uint32_t opcode : 7;
   uint32_t funct3 : 3;
-  int32_t rs1 : 5;
-  int32_t rs2 : 5;
+  int32_t  rs1 : 5;
+  int32_t  rs2 : 5;
   int32_t  imm : 12; // Signed for immediate values
 } stype_instruction_t;
 
 typedef struct {
   uint32_t opcode : 7;
   uint32_t funct3 : 3;
-  int32_t rs1 : 5;
-  int32_t rs2 : 5;
+  int32_t  rs1 : 5;
+  int32_t  rs2 : 5;
   int32_t  imm : 12; // Signed for immediate values
 } btype_instruction_t;
 
 typedef struct {
   uint32_t opcode : 7;
   uint32_t rd : 5;
-  int32_t imm : 20;
+  int32_t  imm : 20;
 } jtype_instruction_t;
 
 typedef struct {
   uint32_t opcode : 7;
   uint32_t rd : 5;
-  uint32_t  imm : 20;
+  uint32_t imm : 20;
 } utype_instruction_t;
-
-
-typedef struct {
-  int32_t*       x_before;
-  int32_t*       x_after;
-  int32_t        pc_before;
-  int32_t        pc_after;
-  struct memory* mem;
-  int32_t        instr_num;
-} test_t;
 
 // Simuler RISC-V program i givet lager og fra given start adresse
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,

@@ -161,8 +161,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         printf("Exit code: %d\n", regs[REG_A0]);
         exit(regs[REG_A0]);
       default:
-        printf("Error: Unknown system call ID %05x\n", regs[REG_RA]);
-        printf("Error: Unknown system call ID %05x\n", regs[REG_A7]);
+        printf("Error: Unknown system call ID.. %05x\n", regs[REG_A7]);
         break;
     }
     printf("=====================================\n");
@@ -286,11 +285,12 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
   uint32_t            rd      = decoded.rd;
   uint32_t*           pc      = payload->pc;
   int32_t*            regs    = payload->regs;
-  int32_t             imm     = decoded.imm;
+  int32_t             imm     = decoded.imm << 1;
 
   switch (opcode) {
     case JAL_OPCODE:
-      regs[rd] = *pc + 4;
+      int temp2 = *pc + 4;
+      regs[rd]  = *pc + 4;
       *pc += imm;
       break;
     default:
