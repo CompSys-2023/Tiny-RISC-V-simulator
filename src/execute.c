@@ -236,13 +236,13 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
   btype_instruction_t decoded       = *(btype_instruction_t*)instr;
   int32_t*            regs          = payload->regs;
-  int32_t             imm           = decoded.imm;
+  int32_t             imm           = decoded.imm << 1;
   uint32_t*           pc            = payload->pc;
   uint32_t            opcode        = decoded.opcode;
   uint32_t            funct3        = decoded.funct3;
   int32_t             rs1           = regs[decoded.rs1];
   int32_t             rs2           = regs[decoded.rs2];
-  int                 branch_addr   = *pc + (imm * 4);
+  int                 branch_addr   = *pc + imm;
   int                 should_branch = 0;
   switch (funct3) {
     case FUNCT3_BEQ:
@@ -285,7 +285,7 @@ void execute_J_type(void* instr, struct memory* mem, payload_t* payload) {
   uint32_t            rd      = decoded.rd;
   uint32_t*           pc      = payload->pc;
   int32_t*            regs    = payload->regs;
-  int32_t             imm     = decoded.imm;
+  int32_t             imm     = decoded.imm << 1;
 
   switch (opcode) {
     case JAL_OPCODE:
