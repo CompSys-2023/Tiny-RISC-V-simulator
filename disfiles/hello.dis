@@ -83,7 +83,7 @@ Disassembly of section .text:
    10084:	00112623          	sw	ra,12(sp)
    10088:	00812423          	sw	s0,8(sp)
    1008c:	3fc78413          	addi	s0,a5,1020
-   10090:	00140413          	addi	s0,s0,1
+   10090:	00140413          	addi	s0,s0,1what is 
    10094:	00000097          	auipc	ra,0x0
    10098:	08c080e7          	jalr	140(ra) # 10120 <outp>
    1009c:	00044503          	lbu	a0,0(s0)

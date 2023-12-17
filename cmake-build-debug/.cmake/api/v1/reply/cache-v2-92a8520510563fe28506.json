@@ -11,7 +11,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/simon/dev/GitHub/Assignment-0x5/cmake-build-debug"
+			"value" : "C:/Users/simon/dev/GitHub/RISC-V simulator (C)/cmake-build-debug"
 		},
 		{
 			"name" : "Assignment_0x5_IS_TOP_LEVEL",
@@ -35,7 +35,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/simon/dev/GitHub/Assignment-0x5"
+			"value" : "C:/Users/simon/dev/GitHub/RISC-V simulator (C)"
 		},
 		{
 			"name" : "CMAKE_ADDR2LINE",
@@ -91,7 +91,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/simon/dev/GitHub/Assignment-0x5/cmake-build-debug"
+			"value" : "c:/Users/simon/dev/GitHub/RISC-V simulator (C)/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -467,7 +467,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/simon/dev/GitHub/Assignment-0x5/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/simon/dev/GitHub/RISC-V simulator (C)/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -539,7 +539,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/simon/dev/GitHub/Assignment-0x5"
+			"value" : "C:/Users/simon/dev/GitHub/RISC-V simulator (C)"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",

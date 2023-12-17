@@ -18,11 +18,10 @@ void initialize_execute_functions(exec_fn_ptr* functions) {
 void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
   rtype_instruction_t decoded = *(rtype_instruction_t*)instr;
   int32_t*            regs    = payload->regs;
-  uint32_t            opcode  = decoded.opcode;
   uint32_t            rd      = decoded.rd;
   uint32_t            funct3  = decoded.funct3;
-  uint32_t            rs1     = regs[decoded.rs1];
-  uint32_t            rs2     = regs[decoded.rs2];
+  int32_t             rs1     = regs[decoded.rs1];
+  int32_t             rs2     = regs[decoded.rs2];
   uint32_t            funct7  = decoded.funct7;
 
   switch (funct3) {
@@ -39,14 +38,7 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
       if (funct7 == FUNCT7_XOR) {
         regs[rd] = rs1 ^ rs2;
       } else if (funct7 == FUNCT7_DIV) {
-        // regs[rd] = rs1 / rs2;
-        if (rs2 == 0) {
-          regs[rd] = -1; // Division by zero
-        } else if (rs1 == INT32_MIN && rs2 == -1) {
-          regs[rd] = INT32_MIN; // Most negative int divided by -1
-        } else {
-          regs[rd] = rs1 / rs2;
-        }
+        regs[rd] = rs1 / rs2;
       }
 
       break;
@@ -68,34 +60,24 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
       if (funct7 == FUNCT7_AND) {
         regs[rd] = rs1 & rs2;
       } else if (funct7 == FUNCT7_REMU) {
-        // regs[rd] = (uint32_t)rs1 % (uint32_t)rs2;
-        if (rs2 == 0) {
-          regs[rd] = rs1; // Remainder when divisor is 0 (unsigned)
-        } else {
-          regs[rd] = (uint32_t)rs1 % (uint32_t)rs2;
-        }
+        regs[rd] = (uint32_t)rs1 % (uint32_t)rs2;
       }
       break;
     case FUNCT3_SLL_MULH:
       if (funct7 == FUNCT7_SLL) {
-        regs[rd] = rs1 << rs2;
+        regs[rd] = (uint32_t)rs1 << (uint32_t)rs2;
       } else if (funct7 == FUNCT7_MULH) {
         int64_t result = (int64_t)rs1 * (int64_t)rs2;
-        regs[rd] = (int32_t)(result >> 32); // upper 32 bits of the int64_t
+        regs[rd]       = (int32_t)(result >> 32);
       }
       break;
     case FUNCT3_SRL_SRA_DIVU:
       if (funct7 == FUNCT7_SRL) {
-        regs[rd] = (uint32_t)rs1 >> rs2;
+        regs[rd] = (uint32_t)rs1 >> (uint32_t)rs2;
       } else if (funct7 == FUNCT7_SRA) {
         regs[rd] = rs1 >> rs2;
       } else if (funct7 == FUNCT7_DIVU) {
-        // regs[rd] = (uint32_t)rs1 / (uint32_t)rs2;
-        if (rs2 == 0) {
-          regs[rd] = UINT32_MAX; // Division by zero for unsigned
-        } else {
-          regs[rd] = (uint32_t)rs1 / (uint32_t)rs2;
-        }
+        regs[rd] = (uint32_t)rs1 / (uint32_t)rs2;
       }
       break;
     case FUNCT3_SLT_MULSU:
@@ -133,7 +115,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   uint32_t            opcode  = decoded.opcode;
   uint32_t            rd      = decoded.rd;
   uint32_t            funct3  = decoded.funct3;
-  uint32_t            rs1     = regs[decoded.rs1];
+  int32_t             rs1     = regs[decoded.rs1];
 
   if (opcode == I_TYPE_OPCODE_JALR) {
     regs[rd] = *pc + 4;
@@ -143,33 +125,24 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   }
 
   if (opcode == I_TYPE_OPCODE_LOAD) {
-    printf("addr=%08x\n", rs1 + imm);
     switch (funct3) {
       case FUNCT3_LB: {
-        int8_t byteValue = memory_rd_b(mem, rs1 + imm);
-        // Sign-extend the byte value to 32 bits
-        regs[rd] = (int32_t)byteValue;
+        regs[rd] = memory_rd_b(mem, rs1 + imm);
         break;
       }
       case FUNCT3_LH: {
-        int16_t halfWordValue = memory_rd_h(mem, rs1 + imm);
-        // Sign-extend the half-word value to 32 bits
-        regs[rd] = (int32_t)halfWordValue;
+        regs[rd] = memory_rd_h(mem, rs1 + imm);
         break;
       }
       case FUNCT3_LW:
         regs[rd] = memory_rd_w(mem, rs1 + imm);
         break;
       case FUNCT3_LBU: {
-        uint8_t byteValue = (uint8_t)memory_rd_b(mem, rs1 + imm);
-        // Zero-extend the byte value to 32 bits
-        regs[rd] = (uint32_t)byteValue;
+        regs[rd] = (unsigned)memory_rd_b(mem, rs1 + imm);
         break;
       }
       case FUNCT3_LHU: {
-        uint16_t halfWordValue = (uint16_t)memory_rd_h(mem, rs1 + imm);
-        // Zero-extend the half-word value to 32 bits
-        regs[rd] = (uint32_t)halfWordValue;
+        regs[rd] = (unsigned)memory_rd_h(mem, rs1 + imm);
         break;
       }
       default:
@@ -181,21 +154,18 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   }
 
   if (opcode == I_TYPE_OPCODE_ECALL) {
-    printf("=============== ECALL ===============\n");
+    printf("=====================================\n");
     switch (regs[REG_A7]) {
-      case 1: // print integer
-        printf("%d", regs[REG_A0]);
+      case 1:
+        regs[REG_A0] = getchar();
         break;
-      case 2: // print float
-        printf("%f", regs[REG_A0]);
+      case 2:
+        putchar(regs[REG_A0]);
         break;
-      case 4: // print string
-        for (int i = 0; i < 10; i++) {
-        }
-        break;
-      case 10: // exit
-        exit(0);
-        break;
+      case 3:
+      case 93:
+        printf("Exit code: %d\n", regs[REG_A0]);
+        exit(regs[REG_A0]);
       default:
         printf("Error: Unknown system call ID %05x\n", regs[REG_RA]);
         printf("Error: Unknown system call ID %05x\n", regs[REG_A7]);
@@ -226,7 +196,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
       if (imm >> 10 == FUNCT7_SRLI) {
         regs[rd] = (unsigned int)rs1 >> (imm & 0x1F);
       } else if (imm >> 10 == FUNCT7_SRAI) {
-        regs[rd] = rs1 >> (imm & 0x1F);
+        regs[rd] = (signed int)rs1 >> (imm & 0x1F);
       }
       break;
     case FUNCT3_SLTI:
@@ -249,20 +219,19 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t*            regs    = payload->regs;
   uint32_t            opcode  = decoded.opcode;
   uint32_t            funct3  = decoded.funct3;
-  uint32_t            rs1     = regs[decoded.rs1];
-  uint32_t            rs2     = regs[decoded.rs2];
+  int32_t             rs1     = regs[decoded.rs1];
+  int32_t             rs2     = regs[decoded.rs2];
   int32_t             imm     = decoded.imm;
-  unsigned int        address = rs1 + imm;
-
+  int                 addr    = rs1 + imm;
   switch (funct3) {
     case FUNCT3_SB:
-      memory_wr_b(mem, address, (int8_t)rs2);
+      memory_wr_b(mem, addr, (int8_t)rs2);
       break;
     case FUNCT3_SH:
-      memory_wr_h(mem, address, (int16_t)rs2);
+      memory_wr_h(mem, addr, (int16_t)rs2);
       break;
     case FUNCT3_SW:
-      memory_wr_w(mem, address, (int32_t)rs2);
+      memory_wr_w(mem, addr, (int32_t)rs2);
       break;
     default:
       printf("Error: Unknown S-type instruction\n");
@@ -272,50 +241,47 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
 }
 
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
-  btype_instruction_t decoded = *(btype_instruction_t*)instr;
-  int32_t*            regs    = payload->regs;
-  int32_t   imm    = decoded.imm << 1; // signed offset in multiples of two.
-  uint32_t* pc     = payload->pc;
-  uint32_t  opcode = decoded.opcode;
-  uint32_t  funct3 = decoded.funct3;
-  uint32_t  rs1    = regs[decoded.rs1];
-  uint32_t  rs2    = regs[decoded.rs2];
-
+  btype_instruction_t decoded       = *(btype_instruction_t*)instr;
+  int32_t*            regs          = payload->regs;
+  int32_t             imm           = decoded.imm;
+  uint32_t*           pc            = payload->pc;
+  uint32_t            opcode        = decoded.opcode;
+  uint32_t            funct3        = decoded.funct3;
+  int32_t             rs1           = regs[decoded.rs1];
+  int32_t             rs2           = regs[decoded.rs2];
+  int                 branch_addr   = *pc + (imm * 4);
+  int                 should_branch = 0;
   switch (funct3) {
     case FUNCT3_BEQ:
-      if (rs1 == rs2) {
-        *pc += imm;
-      }
+      if (rs1 == rs2)
+        should_branch = 1;
       break;
     case FUNCT3_BNE:
-      if (rs1 != rs2) {
-        *pc += imm;
-      }
+      if (rs1 != rs2)
+        should_branch = 1;
       break;
     case FUNCT3_BLT:
-      if (rs1 < rs2) {
-        *pc += imm;
-      }
+      if (rs1 < rs2)
+        should_branch = 1;
       break;
     case FUNCT3_BGE:
-      printf("Seg fault here?");
-      if (rs1 >= rs2) {
-        *pc += imm;
-      }
+      if (rs1 >= rs2)
+        should_branch = 1;
       break;
     case FUNCT3_BLTU:
-      if ((uint32_t)rs1 < (uint32_t)rs2) {
-        *pc += imm;
-      }
+      if ((uint32_t)rs1 < (uint32_t)rs2)
+        should_branch = 1;
       break;
     case FUNCT3_BGEU:
-      if ((uint32_t)rs1 >= (uint32_t)rs2) {
-        *pc += imm;
-      }
+      if ((uint32_t)rs1 >= (uint32_t)rs2)
+        should_branch = 1;
       break;
     default:
       printf("Error: Unknown B-type instruction\n");
       break;
+  }
+  if (should_branch) {
+    *pc = branch_addr;
   }
   free(instr);
 }
@@ -350,7 +316,7 @@ void execute_U_type(void* instr, struct memory* mem, payload_t* payload) {
 
   switch (opcode) {
     case LUI_OPCODE:
-      regs[rd] = (uint32_t)imm << 12;
+      regs[rd] = (imm << 12);
       break;
     case AUIPC_OPCODE:
       regs[rd] = *pc + (imm << 12);

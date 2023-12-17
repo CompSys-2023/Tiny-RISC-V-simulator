@@ -7,7 +7,7 @@
 
 typedef struct {
   int32_t*  regs;
-  uint32_t* pc;
+  int32_t* pc;
 } payload_t;
 
 typedef void (*exec_fn_ptr)(void* instr, struct memory* mem, payload_t* p);

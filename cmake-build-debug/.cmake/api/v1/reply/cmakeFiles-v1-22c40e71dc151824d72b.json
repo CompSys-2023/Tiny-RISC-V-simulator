@@ -434,8 +434,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "C:/Users/simon/dev/GitHub/Assignment-0x5/cmake-build-debug",
-		"source" : "C:/Users/simon/dev/GitHub/Assignment-0x5"
+		"build" : "C:/Users/simon/dev/GitHub/RISC-V simulator (C)/cmake-build-debug",
+		"source" : "C:/Users/simon/dev/GitHub/RISC-V simulator (C)"
 	},
 	"version" : 
 	{

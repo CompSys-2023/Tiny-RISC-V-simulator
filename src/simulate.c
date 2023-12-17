@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TEST_MODE 1 // 1 for testing, 0 for not testingtests_total
+#define TEST_MODE 0 // 1 for testing, 0 for not testingtests_total
 
 #if TEST_MODE
 #define ASSERT_EQUAL_INT(expected, actual, message)                            \
@@ -34,16 +34,16 @@
 #define ASSERT_MULTIPLE(test1, test2) ((test1) && (test2))
 #endif
 
-const long int max_instructions = 1000;
+const long int max_instructions = 100000;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
-int32_t       registers[NUM_REGISTERS]                      = {0};
 
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,
                   FILE* log_file) {
-  uint32_t pc                = start_addr;
-  long int instruction_count = 0;
+  int32_t  pc                       = start_addr;
+  long int instruction_count        = 0;
+  int32_t  registers[NUM_REGISTERS] = {0};
 
 #if TEST_MODE
   int tests_passed = 0;
@@ -55,10 +55,10 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 
   printf("Starting simulation at address %08x\n", start_addr);
 
-  while (1 && instruction_count < max_instructions) {
-    uint32_t  instruction         = memory_rd_w(mem, pc);
-    uint32_t  opcode              = instruction & 0x7f;
-    uint32_t  pc_before           = pc;
+  while (instruction_count < max_instructions != 0) {
+    int       instruction         = memory_rd_w(mem, pc);
+    int       opcode              = instruction & 0x7f;
+    int       pc_before           = pc;
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
 
@@ -68,14 +68,14 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 #endif
 
     execute_functions[opcode](decoded_instruction, mem, &payload);
-
-    // printf("[%d]: PC: %05x, Instruction: %08x\n", instruction_count, pc,
-    // instruction);
+    int a = 0x2000 << 12;
+    printf("[%d]: PC: %05x, Instruction: %08x\n", instruction_count, pc,
+           instruction);
     if (log_file != NULL) {
       fprintf(log_file, "PC: %05x, Instruction: %08x\n", pc_before,
               instruction);
     }
-
+    // pc can be changed in execute
     if (pc_before == pc) {
       pc += 4;
     }
@@ -97,8 +97,6 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 }
 #if TEST_MODE
 
-// expected er altid formentlig højst sandsynlig nok `x_prev` register
-// actual er altid `x` register
 int test(test_t test_data) {
   int32_t*       x_before  = test_data.x_before;
   int32_t*       x_after   = test_data.x_after;
