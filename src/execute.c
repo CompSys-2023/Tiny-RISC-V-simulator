@@ -46,14 +46,7 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
       if (funct7 == FUNCT7_OR) {
         regs[rd] = rs1 | rs2;
       } else if (funct7 == FUNCT7_REM) {
-        // regs[rd] = rs1 % rs2;
-        if (rs2 == 0) {
-          regs[rd] = rs1; // Remainder when divisor is 0
-        } else if (rs1 == INT32_MIN && rs2 == -1) {
-          regs[rd] = 0; // Most negative int divided by -1
-        } else {
-          regs[rd] = rs1 % rs2;
-        }
+        regs[rd] = rs1 % rs2;
       }
       break;
     case FUNCT3_AND_REMU:
@@ -161,6 +154,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         break;
       case 2:
         putchar(regs[REG_A0]);
+        fflush(stdout);
         break;
       case 3:
       case 93:
