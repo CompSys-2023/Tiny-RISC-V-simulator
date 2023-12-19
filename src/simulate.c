@@ -14,7 +14,7 @@
 // 1 for testing, 0 for not testing (only ran on fib.dis otherwise turn off)
 #define TEST_MODE 1
 
-const long int max_instructions = 100000;
+const long int max_instructions = 1000000;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
@@ -48,6 +48,7 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 #endif
 
     execute_functions[opcode](decoded_instruction, mem, &payload);
+    registers[0] = 0;
 
     if (log_file != NULL) {
       fprintf(log_file, "PC: %05x, Instruction: %08x\n", pc_before,

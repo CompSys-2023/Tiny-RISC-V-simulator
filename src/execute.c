@@ -147,14 +147,12 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   }
 
   if (opcode == I_TYPE_OPCODE_ECALL) {
-    printf("=====================================\n");
     switch (regs[REG_A7]) {
       case 1:
         regs[REG_A0] = getchar();
         break;
       case 2:
         putchar(regs[REG_A0]);
-        fflush(stdout);
         break;
       case 3:
       case 93:
@@ -164,7 +162,6 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         printf("Error: Unknown system call ID.. %05x\n", regs[REG_A7]);
         break;
     }
-    printf("=====================================\n");
     free(instr);
     return;
   }
@@ -233,29 +230,49 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   free(instr);
 }
 
-int  beq(int32_t rs1, int32_t rs2) { return rs1 == rs2; }
-int  bne(int32_t rs1, int32_t rs2) { return rs1 != rs2; }
-int  blt(int32_t rs1, int32_t rs2) { return rs1 < rs2; }
-int  bge(int32_t rs1, int32_t rs2) { return rs1 >= rs2; }
-int  bltu(int32_t rs1, int32_t rs2) { return (uint32_t)rs1 < (uint32_t)rs2; }
-int  bgeu(int32_t rs1, int32_t rs2) { return (uint32_t)rs1 >= (uint32_t)rs2; }
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
-  static branch_func_t branch_funcs[] = {beq, bne, NULL, NULL,
-                                         blt, bge, bltu, bgeu};
-  btype_instruction_t  decoded        = *(btype_instruction_t*)instr;
-  int32_t*             regs           = payload->regs;
-  int32_t              imm            = decoded.imm << 1;
-  uint32_t*            pc             = payload->pc;
-  uint32_t             opcode         = decoded.opcode;
-  uint32_t             funct3         = decoded.funct3;
-  uint32_t             rs1            = regs[decoded.rs1];
-  uint32_t             rs2            = regs[decoded.rs2];
-  int                  branch_addr    = *pc + imm;
-
-  if (branch_funcs[funct3](rs1, rs2)) {
+  btype_instruction_t decoded       = *(btype_instruction_t*)instr;
+  int32_t*            regs          = payload->regs;
+  int32_t             imm           = decoded.imm << 1;
+  uint32_t*           pc            = payload->pc;
+  uint32_t            opcode        = decoded.opcode;
+  uint32_t            funct3        = decoded.funct3;
+  int32_t             rs1           = regs[decoded.rs1];
+  int32_t             rs2           = regs[decoded.rs2];
+  int                 branch_addr   = *pc + imm;
+  int                 should_branch = 0;
+  switch (funct3) {
+    case FUNCT3_BEQ:
+      if (rs1 == rs2)
+        should_branch = 1;
+      break;
+    case FUNCT3_BNE:
+      if (rs1 != rs2)
+        should_branch = 1;
+      break;
+    case FUNCT3_BLT:
+      if (rs1 < rs2)
+        should_branch = 1;
+      break;
+    case FUNCT3_BGE:
+      if (rs1 >= rs2)
+        should_branch = 1;
+      break;
+    case FUNCT3_BLTU:
+      if ((uint32_t)rs1 < (uint32_t)rs2)
+        should_branch = 1;
+      break;
+    case FUNCT3_BGEU:
+      if ((uint32_t)rs1 >= (uint32_t)rs2)
+        should_branch = 1;
+      break;
+    default:
+      printf("Error: Unknown B-type instruction\n");
+      break;
+  }
+  if (should_branch) {
     *pc = branch_addr;
   }
-
   free(instr);
 }
 
