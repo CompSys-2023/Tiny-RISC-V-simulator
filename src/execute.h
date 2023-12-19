@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 typedef struct {
-  int32_t*  regs;
+  int32_t* regs;
   int32_t* pc;
 } payload_t;
 
@@ -18,4 +18,14 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload);
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload);
 void execute_J_type(void* instr, struct memory* mem, payload_t* payload);
 void execute_U_type(void* instr, struct memory* mem, payload_t* payload);
+
+// branch logic
+typedef int (*branch_func_t)(int32_t, int32_t);
+int beq(int32_t rs1, int32_t rs2);
+int bne(int32_t rs1, int32_t rs2);
+int blt(int32_t rs1, int32_t rs2);
+int bge(int32_t rs1, int32_t rs2);
+int bltu(int32_t rs1, int32_t rs2);
+int bgeu(int32_t rs1, int32_t rs2);
+
 #endif

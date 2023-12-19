@@ -18,11 +18,11 @@ const long int max_instructions = 100000;
 
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
-int32_t       registers[NUM_REGISTERS]                      = {0};
+uint32_t      registers[NUM_REGISTERS]                      = {0};
 
 long int simulate(struct memory* mem, struct assembly* as, int start_addr,
                   FILE* log_file) {
-  int32_t  pc                = start_addr;
+  uint32_t pc                = start_addr;
   long int instruction_count = 0;
 
 #if TEST_MODE
@@ -36,14 +36,14 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
   printf("Starting simulation at address %08x\n", start_addr);
 
   while (instruction_count < max_instructions != 0) {
-    int       instruction         = memory_rd_w(mem, pc);
-    int       opcode              = instruction & 0x7f;
-    int       pc_before           = pc;
+    uint32_t  instruction         = memory_rd_w(mem, pc);
+    uint32_t  opcode              = instruction & 0x7f;
+    uint32_t  pc_before           = pc;
     void*     decoded_instruction = decode_functions[opcode](instruction);
     payload_t payload             = {registers, &pc};
 
 #if TEST_MODE
-    int32_t previous_reg[NUM_REGISTERS];
+    uint32_t previous_reg[NUM_REGISTERS];
     memcpy(previous_reg, registers, sizeof(registers));
 #endif
 
