@@ -67,7 +67,7 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "lui	a5,0x11");
     }
     case 12: { // !!!!!!!!!!!!!!!
-      int32_t expected = x_before[REG_S0] - 20;
+      int32_t expected = memory_rd_w(mem, x_before[REG_S0] - 20);
       return ASSERT_EQUAL_INT(expected, x_after[REG_A4], "lw	a4,-20(s0)");
     }
     case 13: {
@@ -79,7 +79,7 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(0, 0, "nop");
     }
     case 15: { // !!!!!!!!!!!!!!!
-      int32_t expected = x_before[REG_SP] + 28;
+      int32_t expected = memory_rd_w(mem, x_before[REG_SP] + 28);
       return ASSERT_EQUAL_INT(expected, x_after[REG_S0], "lw	s0,28(sp)");
     }
     case 16: {
@@ -128,11 +128,12 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(expected, x_after[REG_A0], "sw	a0,-36(s0)");
     }
     case 26: { // !!!!!!!!!!!!!!!
-      int32_t expected = x_before[REG_S0] - 36;
+
+      int32_t expected = memory_rd_w(mem, x_before[REG_S0] - 36);
       return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "lw	a5,-36(s0)");
     }
     case 27: { // !!!!!!!!!!!!!!!
-      int32_t expected = x_before[REG_A5];
+      int32_t expected = memory_rd_w(mem, x_before[REG_A5]);
       return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "lw	a5,0(a5)");
     }
     case 28: {
@@ -141,7 +142,7 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "sw	a5,-20(s0)");
     }
     case 29: { // !!!!!!!!!!!!!!!
-      int32_t expected = x_before[REG_A5] - 36;
+      int32_t expected = memory_rd_w(mem, x_before[REG_S0] - 36);
       return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "lw	a5,-36(s0)");
     }
     case 30: {
@@ -154,7 +155,7 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(expected, x_after[REG_A5], "sw	a5,-24(s0)");
     }
     case 32: { // !!!!!!!!!!!!!!!
-      int32_t expected = x_before[REG_S0] - 24;
+      int32_t expected = memory_rd_w(mem, x_before[REG_S0] - 24);
       return ASSERT_EQUAL_INT(expected, x_after[REG_A1], "lw	a1,-24(s0)");
     }
     case 33: { // !!!!!!!!!!!!!!!
@@ -203,7 +204,7 @@ int test(test_t test_data) {
       return ASSERT_EQUAL_INT(expected, x_after[REG_A1], "sw	a1,-56(s0)");
     }
     case 42: { // !!!!!!!!!!!!!!!
-      int32_t expected = x_before[REG_S0] - 52;
+      int32_t expected = memory_rd_w(mem, x_before[REG_S0] - 52);
       return ASSERT_EQUAL_INT(expected, x_after[REG_A4], "lw	a4,-52(s0))");
     }
   } // LI, BLT

@@ -14,8 +14,6 @@
 // 1 for testing, 0 for not testing (only ran on fib.dis otherwise turn off)
 #define TEST_MODE 1
 
-const long int max_instructions = 1000000;
-
 decode_fn_ptr decode_functions[OPCODE_FUNCTION_ARRAY_SIZE]  = {0};
 exec_fn_ptr   execute_functions[OPCODE_FUNCTION_ARRAY_SIZE] = {0};
 uint32_t      registers[NUM_REGISTERS]                      = {0};
@@ -35,7 +33,7 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 
   printf("Starting simulation at address %08x\n", start_addr);
 
-  while (instruction_count < max_instructions != 0) {
+  while (1) {
     uint32_t  instruction         = memory_rd_w(mem, pc);
     uint32_t  opcode              = instruction & 0x7f;
     uint32_t  pc_before           = pc;
