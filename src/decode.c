@@ -45,7 +45,7 @@ stype_instruction_t* decode_S_type(uint32_t instruction) {
   int32_t imm_11_5 = (instruction >> 25) & 0x7f; // 0x7f => 0b1111111
   decoded->imm     = 0;
   decoded->imm |= imm_11_5 << 5;
-  decoded->imm |= imm_4_0 << 0;
+  decoded->imm |= imm_4_0;
   return decoded;
 }
 
@@ -63,7 +63,18 @@ btype_instruction_t* decode_B_type(uint32_t instruction) {
   decoded->imm |= imm_12 << 11;
   decoded->imm |= imm_11 << 10;
   decoded->imm |= imm_10_5 << 4;
-  decoded->imm |= imm_4_1 << 0;
+  decoded->imm |= imm_4_1;
+
+  // [12 10 9 8 7 6 5 4 3 2 1 0]
+  // imm_12         = [12]
+  // imm_11         = [11]
+  // imm_10_5       = [10 9 8 7 6 5]
+  // imm_4_1        = [4 3 2 1]
+  // imm_12 << 11   = [12 0 0 0 0 0 0 0 0 0 0 0]
+  // imm_11 << 10   = [12 11 0 0 0 0 0 0 0 0 0 0]
+  // imm_10_5 << 4  = [12 11 10 9 8 7 6 5 0 0 0 0]
+  // imm_4_1        = [12 11 10 9 8 7 6 5 4 3 2 1]
+
   return decoded;
 }
 

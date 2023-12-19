@@ -46,7 +46,7 @@ long int simulate(struct memory* mem, struct assembly* as, int start_addr,
 #endif
 
     execute_functions[opcode](decoded_instruction, mem, &payload);
-    registers[0] = 0;
+    registers[REG_ZERO] = 0;
 
     if (log_file != NULL) {
       fprintf(log_file, "PC: %05x, Instruction: %08x\n", pc_before,
