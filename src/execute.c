@@ -133,6 +133,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
         break;
       case 2:
         putchar(regs[REG_A0]);
+        fflush(stdout);
         break;
       case 3:
       case 93:
