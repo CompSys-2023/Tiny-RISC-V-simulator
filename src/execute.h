@@ -28,4 +28,10 @@ int bge(int32_t rs1, int32_t rs2);
 int bltu(int32_t rs1, int32_t rs2);
 int bgeu(int32_t rs1, int32_t rs2);
 
+// store logic
+typedef void (*store_func_t)(struct memory*, int32_t, int);
+
+// load logic
+typedef int (*load_func_t)(struct memory*, int32_t);
+
 #endif

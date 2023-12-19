@@ -100,6 +100,9 @@ void execute_R_type(void* instr, struct memory* mem, payload_t* payload) {
   free(instr);
 }
 
+static load_func_t load_functions[FUNCT3_LHU + 1] = {
+    &memory_rd_b, &memory_rd_h, &memory_rd_w, NULL, &memory_rd_b, &memory_rd_h};
+
 void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   itype_instruction_t decoded = *(itype_instruction_t*)instr;
   int32_t*            regs    = payload->regs;
@@ -118,30 +121,7 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   }
 
   if (opcode == I_TYPE_OPCODE_LOAD) {
-    switch (funct3) {
-      case FUNCT3_LB: {
-        regs[rd] = memory_rd_b(mem, rs1 + imm);
-        break;
-      }
-      case FUNCT3_LH: {
-        regs[rd] = memory_rd_h(mem, rs1 + imm);
-        break;
-      }
-      case FUNCT3_LW:
-        regs[rd] = memory_rd_w(mem, rs1 + imm);
-        break;
-      case FUNCT3_LBU: {
-        regs[rd] = (unsigned)memory_rd_b(mem, rs1 + imm);
-        break;
-      }
-      case FUNCT3_LHU: {
-        regs[rd] = (unsigned)memory_rd_h(mem, rs1 + imm);
-        break;
-      }
-      default:
-        printf("Error: Unknown I-type-load instruction\n");
-        break;
-    }
+    regs[rd] = load_functions[funct3](mem, rs1 + imm);
     free(instr);
     return;
   }
@@ -204,6 +184,8 @@ void execute_I_type(void* instr, struct memory* mem, payload_t* payload) {
   free(instr);
 }
 
+static store_func_t store_functions[FUNCT3_SW + 1] = {
+    &memory_wr_b, &memory_wr_h, &memory_wr_w};
 void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   stype_instruction_t decoded = *(stype_instruction_t*)instr;
   int32_t*            regs    = payload->regs;
@@ -213,31 +195,21 @@ void execute_S_type(void* instr, struct memory* mem, payload_t* payload) {
   int32_t             rs2     = regs[decoded.rs2];
   int32_t             imm     = decoded.imm;
   int                 addr    = rs1 + imm;
-  switch (funct3) {
-    case FUNCT3_SB:
-      memory_wr_b(mem, addr, (int8_t)rs2);
-      break;
-    case FUNCT3_SH:
-      memory_wr_h(mem, addr, (int16_t)rs2);
-      break;
-    case FUNCT3_SW:
-      memory_wr_w(mem, addr, (int32_t)rs2);
-      break;
-    default:
-      printf("Error: Unknown S-type instruction\n");
-      break;
-  }
+
+  store_functions[funct3](mem, addr, rs2);
+
   free(instr);
 }
-int  beq(int32_t rs1, int32_t rs2) { return rs1 == rs2; }
-int  bne(int32_t rs1, int32_t rs2) { return rs1 != rs2; }
-int  blt(int32_t rs1, int32_t rs2) { return rs1 < rs2; }
-int  bge(int32_t rs1, int32_t rs2) { return rs1 >= rs2; }
-int  bltu(int32_t rs1, int32_t rs2) { return (uint32_t)rs1 < (uint32_t)rs2; }
-int  bgeu(int32_t rs1, int32_t rs2) { return (uint32_t)rs1 >= (uint32_t)rs2; }
+
+int beq(int32_t rs1, int32_t rs2) { return rs1 == rs2; }
+int bne(int32_t rs1, int32_t rs2) { return rs1 != rs2; }
+int blt(int32_t rs1, int32_t rs2) { return rs1 < rs2; }
+int bge(int32_t rs1, int32_t rs2) { return rs1 >= rs2; }
+int bltu(int32_t rs1, int32_t rs2) { return (uint32_t)rs1 < (uint32_t)rs2; }
+int bgeu(int32_t rs1, int32_t rs2) { return (uint32_t)rs1 >= (uint32_t)rs2; }
+static branch_func_t branch_functions[FUNCT3_BGEU + 1] = {beq, bne, NULL, NULL,
+                                                          blt, bge, bltu, bgeu};
 void execute_B_type(void* instr, struct memory* mem, payload_t* payload) {
-  static branch_func_t branch_functions[0x7 + 1] = {beq, bne, 0,    0,
-                                                    blt, bge, bltu, bgeu};
 
   btype_instruction_t decoded     = *(btype_instruction_t*)instr;
   int32_t*            regs        = payload->regs;

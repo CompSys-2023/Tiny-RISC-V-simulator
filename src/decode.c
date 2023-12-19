@@ -64,17 +64,6 @@ btype_instruction_t* decode_B_type(uint32_t instruction) {
   decoded->imm |= imm_11 << 10;
   decoded->imm |= imm_10_5 << 4;
   decoded->imm |= imm_4_1;
-
-  // [12 10 9 8 7 6 5 4 3 2 1 0]
-  // imm_12         = [12]
-  // imm_11         = [11]
-  // imm_10_5       = [10 9 8 7 6 5]
-  // imm_4_1        = [4 3 2 1]
-  // imm_12 << 11   = [12 0 0 0 0 0 0 0 0 0 0 0]
-  // imm_11 << 10   = [12 11 0 0 0 0 0 0 0 0 0 0]
-  // imm_10_5 << 4  = [12 11 10 9 8 7 6 5 0 0 0 0]
-  // imm_4_1        = [12 11 10 9 8 7 6 5 4 3 2 1]
-
   return decoded;
 }
 
@@ -101,3 +90,14 @@ utype_instruction_t* decode_U_type(uint32_t instruction) {
   decoded->imm                 = (instruction >> 12) & 0xfffff;
   return decoded;
 }
+
+// An explanation of jtype so we can understand it in 3 months. :D
+//                   [11 10  9  8  7  6  5  4  3  2  1  0]
+//  imm_12         =                                  [12]
+//  imm_11         =                                  [11]
+//  imm_10_5       =                   [10  9  8  7  6  5]
+//  imm_4_1        =                          [4  3  2  1]
+//  imm_12 << 11   = [12  0  0  0  0  0  0  0  0  0  0  0]
+//  imm_11 << 10   = [ 0 11  0  0  0  0  0  0  0  0  0  0]
+//  imm_10_5 << 4  = [ 0  0 10  9  8  7  6  5  0  0  0  0]
+//  imm_4_1        = [ 0  0  0  0  0  0  0  0  4  3  2  1]
